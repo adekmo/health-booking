@@ -66,43 +66,74 @@ const NutritionistProfilePage = () => {
 
   if (!profile) return <p className="text-center mt-10">Loading...</p>;
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow rounded">
+    <div className="w-full p-6 bg-white shadow-lg rounded">
       {!editMode ? (
         // VIEW MODE
-        <div>
-          <div className="flex flex-col items-center">
-            <Image
-              src={profile.photo || "/default-avatar.png"}
-              alt={profile.name}
-              width={120}
-              height={120}
-              className="rounded-full object-cover"
-            />
-            <h2 className="text-xl font-bold mt-4">{profile.name}</h2>
-            <p className="text-gray-600">{profile.specialization}</p>
-            <p className="text-gray-500">
-              {profile.experienceYears} years experience
-            </p>
-            <p className="mt-2">{profile.bio}</p>
-            <p className="font-semibold mt-2">
-              Rp {profile.pricePerSession} / session
-            </p>
+        <div className="flex flex-col gap-5">
+          <div className="grid md:grid-cols-2 gap-2 items-center">
+            <div>
+              <h3 className="font-bold">Personal Info</h3>
+              <p className="text-sm text-slate-500">View and update your accounts personal information</p>
+            </div>
+            <div className="flex justify-center">
+              <button
+                onClick={() => setEditMode(true)}
+                className="mt-4 w-1/2 px-4 py-2 bg-emerald-400 text-white rounded hover:bg-emerald-300 cursor-pointer"
+              >
+                Edit Profile
+              </button>
+            </div>
+          </div>
+          <div className="grid md:grid-cols-2 gap-2 items-center">
+            <div>
+              <h4 className="font-bold">Profile Photo</h4>
+              <p className="text-sm text-slate-500">Upload your profile image to personalize your account</p>
+            </div>
+            <div className="flex justify-center">
+              <Image
+                src={profile.photo || "/default-avatar.png"}
+                alt={profile.name}
+                width={100}
+                height={100}
+                className="w-20 h-20 rounded-full object-cover border border-emerald-400"
+              />
+            </div>
+          </div>
+          <div className="grid md:grid-cols-2 gap-2 items-center">
+            <h4>Name</h4>
+            <p className="bg-emerald-300 px-3 py-2 rounded">{profile.name}</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-2 items-center">
+            <h4>Specialization</h4>
+            <p className="bg-emerald-300 px-3 py-2 rounded">{profile.specialization}</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-2 items-center">
+            <h4>Years experience</h4>
+            <p className="bg-emerald-300 px-3 py-2 rounded">{profile.experienceYears}</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-2 items-center">
+            <h4>Bio</h4>
+            <p className="bg-emerald-300 px-3 py-2 rounded">{profile.bio}</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-2 items-center">
+            <h4>Price</h4>
+            <p className="bg-emerald-300 px-3 py-2 rounded">Rp {profile.pricePerSession} / session</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-2 items-center">
+            <h4>Contact</h4>
             {profile.contact && (
-              <p className="text-sm text-gray-600 mt-2">
-                Contact: {profile.contact}
+              <p className="bg-emerald-300 px-3 py-2 rounded">
+                {profile.contact}
               </p>
             )}
+          </div>
+          <div className="grid md:grid-cols-2 gap-2 items-center">
+            <h4>Location</h4>
             {profile.location && (
-              <p className="text-sm text-gray-600">
-                Location: {profile.location}
+              <p className="bg-emerald-300 px-3 py-2 rounded">
+                {profile.location}
               </p>
             )}
-            <button
-              onClick={() => setEditMode(true)}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Edit Profile
-            </button>
           </div>
         </div>
       ) : (
