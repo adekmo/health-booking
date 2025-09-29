@@ -32,7 +32,12 @@ const UploadImage = ({ value, onChange }: UploadImageProps) => {
     const [preview, setPreview] = useState<string | undefined>(value);
     const [error, setError] = useState<string | null>(null);
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 flex gap-5 items-center justify-around">
+      {preview && (
+        <div className="relative w-32 h-32">
+          <Image src={preview} alt="Profile Photo" fill className="object-cover rounded-full" />
+        </div>
+      )}
       <CldUploadWidget
         uploadPreset="recipe_upload"
         onSuccess={(result: CloudinaryUploadWidgetResults) => {
@@ -65,18 +70,12 @@ const UploadImage = ({ value, onChange }: UploadImageProps) => {
           <button
             type="button"
             onClick={() => open()}
-            className="px-4 py-2 bg-blue-600 text-white rounded"
+            className="px-4 py-2 bg-emerald-400 cursor-pointer text-white rounded"
           >
             Upload Photo
           </button>
         )}
       </CldUploadWidget>
-
-      {preview && (
-        <div className="relative w-32 h-32">
-          <Image src={preview} alt="Profile Photo" fill className="object-cover rounded" />
-        </div>
-      )}
     </div>
   )
 }

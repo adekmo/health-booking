@@ -78,7 +78,7 @@ const NutritionistProfilePage = () => {
             <div className="flex justify-center">
               <button
                 onClick={() => setEditMode(true)}
-                className="mt-4 w-1/2 px-4 py-2 bg-emerald-400 text-white rounded hover:bg-emerald-300 cursor-pointer"
+                className="mt-4 px-4 py-2 bg-emerald-400 text-white rounded hover:bg-emerald-300 cursor-pointer"
               >
                 Edit Profile
               </button>
@@ -101,28 +101,28 @@ const NutritionistProfilePage = () => {
           </div>
           <div className="grid md:grid-cols-2 gap-2 items-center">
             <h4>Name</h4>
-            <p className="bg-emerald-300 px-3 py-2 rounded">{profile.name}</p>
+            <p className="bg-emerald-300/20 px-3 py-2 rounded shadow">{profile.name}</p>
           </div>
           <div className="grid md:grid-cols-2 gap-2 items-center">
             <h4>Specialization</h4>
-            <p className="bg-emerald-300 px-3 py-2 rounded">{profile.specialization}</p>
+            <p className="bg-emerald-300/20 px-3 py-2 rounded shadow">{profile.specialization}</p>
           </div>
           <div className="grid md:grid-cols-2 gap-2 items-center">
             <h4>Years experience</h4>
-            <p className="bg-emerald-300 px-3 py-2 rounded">{profile.experienceYears}</p>
+            <p className="bg-emerald-300/20 px-3 py-2 rounded shadow">{profile.experienceYears}</p>
           </div>
           <div className="grid md:grid-cols-2 gap-2 items-center">
             <h4>Bio</h4>
-            <p className="bg-emerald-300 px-3 py-2 rounded">{profile.bio}</p>
+            <p className="bg-emerald-300/20 px-3 py-2 rounded shadow">{profile.bio}</p>
           </div>
           <div className="grid md:grid-cols-2 gap-2 items-center">
             <h4>Price</h4>
-            <p className="bg-emerald-300 px-3 py-2 rounded">Rp {profile.pricePerSession} / session</p>
+            <p className="bg-emerald-300/20 px-3 py-2 rounded shadow">Rp {profile.pricePerSession} / session</p>
           </div>
           <div className="grid md:grid-cols-2 gap-2 items-center">
             <h4>Contact</h4>
             {profile.contact && (
-              <p className="bg-emerald-300 px-3 py-2 rounded">
+              <p className="bg-emerald-300/20 px-3 py-2 rounded shadow">
                 {profile.contact}
               </p>
             )}
@@ -130,7 +130,7 @@ const NutritionistProfilePage = () => {
           <div className="grid md:grid-cols-2 gap-2 items-center">
             <h4>Location</h4>
             {profile.location && (
-              <p className="bg-emerald-300 px-3 py-2 rounded">
+              <p className="bg-emerald-300/20 px-3 py-2 rounded shadow">
                 {profile.location}
               </p>
             )}
@@ -139,6 +139,14 @@ const NutritionistProfilePage = () => {
       ) : (
         // EDIT MODE
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <Controller
+            control={control}
+            name="photo"
+            render={({ field }) => (
+              <UploadImage value={field.value} onChange={field.onChange} />
+            )}
+          />
+
           <input
             {...register("name")}
             placeholder="Full Name"
@@ -213,14 +221,6 @@ const NutritionistProfilePage = () => {
               className="border p-2 rounded w-full"
             />
           </div>
-
-          <Controller
-            control={control}
-            name="photo"
-            render={({ field }) => (
-              <UploadImage value={field.value} onChange={field.onChange} />
-            )}
-          />
 
           <div className="flex gap-2">
             <button

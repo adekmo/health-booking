@@ -1,9 +1,10 @@
-import Image from "next/image";
 
 export default function Home() {
   return (
-    <h1 className="text-3xl text-amber-300 font-bold underline">
-      Hello world!
-    </h1>
+    <main className="min-h-screen text-gray-400 bg-foreground">
+        <div className="container py-10">
+            ISI
+        </div>
+    </main>
   );
 }
