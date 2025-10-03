@@ -18,7 +18,7 @@ const UserDropdown = () => {
     const router = useRouter();
 
     const handleSignOut = async () => {
-        router.push('auth/sign-in');
+        router.push('auth/signin');
     }
 
     const user = {name: 'Adek', email: 'adek@gmail.com'};
