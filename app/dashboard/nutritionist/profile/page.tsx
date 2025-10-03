@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-hot-toast";
+import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 
 type NutritionistProfile = {
   name: string;
@@ -66,178 +68,179 @@ const NutritionistProfilePage = () => {
 
   if (!profile) return <p className="text-center mt-10">Loading...</p>;
   return (
-    <div className="w-full p-6 bg-white shadow-lg rounded">
+    <div className="w-full p-6 bg-gray-800/30 shadow-lg rounded">
       {!editMode ? (
         // VIEW MODE
-        <div className="flex flex-col gap-5">
-          <div className="grid md:grid-cols-2 gap-2 items-center">
+        <Card className="shadow-md bg-emerald-500/20 border-none">
+          <CardHeader className="flex flex-row justify-between items-center">
             <div>
-              <h3 className="font-bold">Personal Info</h3>
-              <p className="text-sm text-slate-500">View and update your accounts personal information</p>
+              <CardTitle className="text-xl text-gray-100">Personal Info</CardTitle>
+              <CardDescription className="text-gray-300">
+                View and update your account’s personal information
+              </CardDescription>
             </div>
-            <div className="flex justify-center">
-              <button
-                onClick={() => setEditMode(true)}
-                className="mt-4 px-4 py-2 bg-emerald-400 text-white rounded hover:bg-emerald-300 cursor-pointer"
-              >
-                Edit Profile
-              </button>
-            </div>
-          </div>
-          <div className="grid md:grid-cols-2 gap-2 items-center">
-            <div>
-              <h4 className="font-bold">Profile Photo</h4>
-              <p className="text-sm text-slate-500">Upload your profile image to personalize your account</p>
-            </div>
-            <div className="flex justify-center">
+            <Button
+              onClick={() => setEditMode(true)}
+              className="bg-emerald-500/40 hover:bg-emerald-500/30 text-white"
+            >
+              Edit Profile
+            </Button>
+          </CardHeader>
+
+          <CardContent className="space-y-6 text-gray-100">
+            <div className="flex flex-col items-center">
               <Image
                 src={profile.photo || "/default-avatar.png"}
                 alt={profile.name}
                 width={100}
                 height={100}
-                className="w-20 h-20 rounded-full object-cover border border-emerald-400"
+                className="w-24 h-24 rounded-full object-cover border border-emerald-400"
               />
             </div>
-          </div>
-          <div className="grid md:grid-cols-2 gap-2 items-center">
-            <h4>Name</h4>
-            <p className="bg-emerald-300/20 px-3 py-2 rounded shadow">{profile.name}</p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-2 items-center">
-            <h4>Specialization</h4>
-            <p className="bg-emerald-300/20 px-3 py-2 rounded shadow">{profile.specialization}</p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-2 items-center">
-            <h4>Years experience</h4>
-            <p className="bg-emerald-300/20 px-3 py-2 rounded shadow">{profile.experienceYears}</p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-2 items-center">
-            <h4>Bio</h4>
-            <p className="bg-emerald-300/20 px-3 py-2 rounded shadow">{profile.bio}</p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-2 items-center">
-            <h4>Price</h4>
-            <p className="bg-emerald-300/20 px-3 py-2 rounded shadow">Rp {profile.pricePerSession} / session</p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-2 items-center">
-            <h4>Contact</h4>
-            {profile.contact && (
-              <p className="bg-emerald-300/20 px-3 py-2 rounded shadow">
-                {profile.contact}
-              </p>
-            )}
-          </div>
-          <div className="grid md:grid-cols-2 gap-2 items-center">
-            <h4>Location</h4>
-            {profile.location && (
-              <p className="bg-emerald-300/20 px-3 py-2 rounded shadow">
-                {profile.location}
-              </p>
-            )}
-          </div>
-        </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <h4 className="font-semibold">Name</h4>
+                <p className="bg-emerald-300/20 px-3 py-2 rounded">{profile.name}</p>
+              </div>
+              <div>
+                <h4 className="font-semibold">Specialization</h4>
+                <p className="bg-emerald-300/20 px-3 py-2 rounded">{profile.specialization}</p>
+              </div>
+              <div>
+                <h4 className="font-semibold">Experience</h4>
+                <p className="bg-emerald-300/20 px-3 py-2 rounded">{profile.experienceYears} years</p>
+              </div>
+              <div>
+                <h4 className="font-semibold">Price</h4>
+                <p className="bg-emerald-300/20 px-3 py-2 rounded">Rp {profile.pricePerSession} / session</p>
+              </div>
+              <div>
+                <h4 className="font-semibold">Contact</h4>
+                <p className="bg-emerald-300/20 px-3 py-2 rounded">{profile.contact || "-"}</p>
+              </div>
+              <div>
+                <h4 className="font-semibold">Location</h4>
+                <p className="bg-emerald-300/20 px-3 py-2 rounded">{profile.location || "-"}</p>
+              </div>
+              <div className="md:col-span-2">
+                <h4 className="font-semibold">Bio</h4>
+                <p className="bg-emerald-300/20 px-3 py-2 rounded">{profile.bio}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       ) : (
         // EDIT MODE
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Controller
-            control={control}
-            name="photo"
-            render={({ field }) => (
-              <UploadImage value={field.value} onChange={field.onChange} />
-            )}
-          />
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Card className="shadow-md bg-emerald-500/20 border-none">
+            <CardHeader>
+              <h3 className="text-xl font-semibold text-gray-100">Edit Profile</h3>
+              <p className="text-sm text-gray-300">Update your profile information below</p>
+            </CardHeader>
 
-          <input
-            {...register("name")}
-            placeholder="Full Name"
-            className="w-full border p-2 rounded"
-            required
-          />
-          <input
-            {...register("specialization")}
-            placeholder="Specialization"
-            className="w-full border p-2 rounded"
-          />
-          <input
-            {...register("experienceYears", { valueAsNumber: true })}
-            type="number"
-            placeholder="Years of experience"
-            className="w-full border p-2 rounded"
-          />
-          <input
-            {...register("license")}
-            placeholder="License / STR Number"
-            className="w-full border p-2 rounded"
-          />
-          <textarea
-            {...register("bio")}
-            placeholder="Short bio"
-            className="w-full border p-2 rounded"
-          />
-          <input
-            {...register("contact")}
-            placeholder="Contact (email/phone)"
-            className="w-full border p-2 rounded"
-          />
-          <input
-            {...register("location")}
-            placeholder="Location / Clinic"
-            className="w-full border p-2 rounded"
-          />
-          <input
-            {...register("pricePerSession", { valueAsNumber: true })}
-            type="number"
-            placeholder="Price per session"
-            className="w-full border p-2 rounded"
-          />
+            <CardContent className="space-y-4">
+              <Controller
+                control={control}
+                name="photo"
+                render={({ field }) => (
+                  <UploadImage value={field.value} onChange={field.onChange} />
+                )}
+              />
 
-          <fieldset className="border p-2 rounded">
-            <legend className="text-sm font-semibold">Available Days</legend>
-            {[
-              "monday",
-              "tuesday",
-              "wednesday",
-              "thursday",
-              "friday",
-              "saturday",
-              "sunday",
-            ].map((day) => (
-              <label key={day} className="block">
-                <input type="checkbox" value={day} {...register("availableDays")} />{" "}
-                {day}
-              </label>
-            ))}
-          </fieldset>
+              <input
+                {...register("name")}
+                placeholder="Full Name"
+                className="w-full bg-emerald-500/10 border border-emerald-400/30 text-gray-100 p-2 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                required
+              />
+              <input
+                {...register("specialization")}
+                placeholder="Specialization"
+                className="w-full bg-emerald-500/10 border border-emerald-400/30 text-gray-100 p-2 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              />
+              <input
+                {...register("experienceYears", { valueAsNumber: true })}
+                type="number"
+                placeholder="Years of experience"
+                className="w-full bg-emerald-500/10 border border-emerald-400/30 text-gray-100 p-2 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              />
+              <input
+                {...register("license")}
+                placeholder="License / STR Number"
+                className="w-full bg-emerald-500/10 border border-emerald-400/30 text-gray-100 p-2 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              />
+              <textarea
+                {...register("bio")}
+                placeholder="Short bio"
+                className="w-full bg-emerald-500/10 border border-emerald-400/30 text-gray-100 p-2 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              />
+              <input
+                {...register("contact")}
+                placeholder="Contact (email/phone)"
+                className="w-full bg-emerald-500/10 border border-emerald-400/30 text-gray-100 p-2 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              />
+              <input
+                {...register("location")}
+                placeholder="Location / Clinic"
+                className="w-full bg-emerald-500/10 border border-emerald-400/30 text-gray-100 p-2 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              />
+              <input
+                {...register("pricePerSession", { valueAsNumber: true })}
+                type="number"
+                placeholder="Price per session"
+                className="w-full bg-emerald-500/10 border border-emerald-400/30 text-gray-100 p-2 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              />
 
-          <div className="flex gap-2">
-            <input
-              {...register("availableHours.start")}
-              type="time"
-              className="border p-2 rounded w-full"
-            />
-            <input
-              {...register("availableHours.end")}
-              type="time"
-              className="border p-2 rounded w-full"
-            />
-          </div>
+              <fieldset className="border border-emerald-400/30 p-3 rounded">
+                <legend className="text-sm font-semibold text-gray-100">Available Days</legend>
+                {[
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday",
+                ].map((day) => (
+                  <label key={day} className="block text-gray-300">
+                    <input type="checkbox" value={day} {...register("availableDays")} />{" "}
+                    {day}
+                  </label>
+                ))}
+              </fieldset>
 
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-green-600 text-white py-2 rounded"
-            >
-              {loading ? "Saving..." : "Save Profile"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setEditMode(false)}
-              className="w-full bg-gray-400 text-white py-2 rounded"
-            >
-              Cancel
-            </button>
-          </div>
+              <div className="flex gap-2">
+                <input
+                  {...register("availableHours.start")}
+                  type="time"
+                  className="w-full bg-emerald-500/10 border border-emerald-400/30 text-gray-100 p-2 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                />
+                <input
+                  {...register("availableHours.end")}
+                  type="time"
+                  className="w-full bg-emerald-500/10 border border-emerald-400/30 text-gray-100 p-2 rounded focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                />
+              </div>
+            </CardContent>
+
+            <CardFooter className="flex gap-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-emerald-500/30 text-gray-100 py-2 rounded hover:bg-emerald-500/40 transition"
+              >
+                {loading ? "Saving..." : "Save Profile"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditMode(false)}
+                className="w-full bg-gray-500/30 text-gray-100 py-2 rounded hover:bg-gray-500/40 transition"
+              >
+                Cancel
+              </button>
+            </CardFooter>
+          </Card>
         </form>
       )}
     </div>
