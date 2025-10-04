@@ -13,12 +13,14 @@ import { useRouter } from "next/navigation"
 import { Button } from "./ui/button";
 import { LogOut } from "lucide-react";
 import NavItems from "./NavItems";
+import { signOut } from "next-auth/react";
 
 const UserDropdown = () => {
     const router = useRouter();
 
     const handleSignOut = async () => {
-        router.push('auth/signin');
+        await signOut({ redirect: false }); // hapus session tanpa reload penuh
+        router.push("/auth/signin");
     }
 
     const user = {name: 'Adek', email: 'adek@gmail.com'};
