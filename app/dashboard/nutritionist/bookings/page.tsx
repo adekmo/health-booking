@@ -4,16 +4,24 @@ import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, CalendarDays, User } from "lucide-react";
-import { format } from "date-fns";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Loader2, CalendarDays, User, Search } from "lucide-react";
+import { format, isSameDay } from "date-fns";
 import toast from "react-hot-toast";
 import type { Booking } from "@/types/booking";
 
 const NutritionistBookingsPage = () => {
 
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -21,6 +29,7 @@ const NutritionistBookingsPage = () => {
         const res = await fetch("/api/bookings");
         const data = await res.json();
         setBookings(data);
+        setFilteredBookings(data);
       } catch (error) {
         console.error("Failed to load bookings:", error);
       } finally {
@@ -29,6 +38,28 @@ const NutritionistBookingsPage = () => {
     };
     fetchBookings();
   }, []);
+
+  useEffect(() => {
+    let filtered = bookings;
+
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((b) => b.status === statusFilter);
+    }
+
+    if (selectedDate) {
+      filtered = filtered.filter((b) =>
+        isSameDay(new Date(b.date), selectedDate)
+      );
+    }
+
+    if (searchQuery) {
+      filtered = filtered.filter((b) =>
+        b.customerId?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    setFilteredBookings(filtered);
+  }, [statusFilter, selectedDate, searchQuery, bookings]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -103,72 +134,131 @@ const NutritionistBookingsPage = () => {
         Incoming Bookings
       </h1>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {bookings.map((booking) => (
-          <Card
-            key={booking._id}
-            className="bg-emerald-500/10 border-emerald-700/30 text-gray-100 hover:bg-emerald-500/20 transition"
-          >
-            <CardHeader className="flex flex-col space-y-2">
-              <CardTitle className="flex items-center gap-2 text-gray-100 text-lg">
-                <User className="w-4 h-4 text-emerald-400" />
-                {booking.customerId?.name ?? "Unknown Customer"}
-              </CardTitle>
-            </CardHeader>
+      {/* --- Filter Section --- */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        {/* Tabs Filter */}
+        <Tabs
+          value={statusFilter}
+          onValueChange={(val) => setStatusFilter(val)}
+          className="w-full md:w-auto"
+        >
+          <TabsList className="bg-emerald-950/30 border border-emerald-800/50">
+            <TabsTrigger value="all" className="text-gray-100">All</TabsTrigger>
+            <TabsTrigger value="pending" className="text-gray-100">Pending</TabsTrigger>
+            <TabsTrigger value="confirmed" className="text-gray-100">Confirmed</TabsTrigger>
+            <TabsTrigger value="cancelled" className="text-gray-100">Cancelled</TabsTrigger>
+          </TabsList>
+        </Tabs>
 
-            <CardContent className="space-y-2 text-sm text-gray-300">
-              <p>
-                <span className="text-gray-100 font-medium">Date:</span>{" "}
-                {format(new Date(booking.date), "PPP")}
-              </p>
-              <p>
-                <span className="text-gray-100 font-medium">Status:</span>{" "}
-                <Badge className={`${getStatusColor(booking.status)} border-none`}>
-                  {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                </Badge>
-              </p>
-              {booking.note && (
-                <p>
-                  <span className="text-gray-100 font-medium">Note:</span>{" "}
-                  {booking.note}
-                </p>
-              )}
-            </CardContent>
+        {/* Search Input */}
+        <div className="relative w-full md:w-64">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search customer..."
+            className="pl-8 bg-emerald-950/20 border-emerald-800 text-gray-100"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
 
-            <CardFooter className="flex gap-2">
-              {booking.status === "pending" ? (
-                <>
-                  <Button
-                    size="sm"
-                    className="flex-1 bg-emerald-600 hover:bg-emerald-700"
-                    onClick={() => handleUpdateStatus(booking._id, "confirmed")}
-                    disabled={processingId === booking._id}
-                  >
-                    {processingId === booking._id ? "Processing..." : "Accept"}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    className="flex-1 bg-red-600 hover:bg-red-700"
-                    onClick={() => handleUpdateStatus(booking._id, "cancelled")}
-                    disabled={processingId === booking._id}
-                  >
-                    Reject
-                  </Button>
-                </>
-              ) : (
-                <p className="text-sm text-gray-400 italic">
-                  {booking.status === "confirmed"
-                    ? "Accepted"
-                    : booking.status === "cancelled"
-                    ? "Rejected / Cancelled"
-                    : ""}
-                </p>
-              )}
-            </CardFooter>
-          </Card>
-        ))}
+        {/* Date Picker */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className="bg-emerald-900/20 text-gray-100 border-emerald-800 hover:bg-emerald-900/40"
+            >
+              <CalendarDays className="w-4 h-4 mr-2 text-emerald-400" />
+              {selectedDate ? format(selectedDate, "PPP") : "Select date"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0 bg-emerald-900/20 border border-emerald-800 text-gray-100">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
+            />
+          </PopoverContent>
+        </Popover>
       </div>
+
+      {/* --- Booking List --- */}
+      {filteredBookings.length === 0 ? (
+        <div className="text-center min-h-[50vh] flex flex-col items-center justify-center text-gray-400">
+          <CalendarDays className="w-10 h-10 mb-2 text-emerald-400" />
+          <p>No bookings found.</p>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredBookings.map((booking) => (
+            <Card
+              key={booking._id}
+              className="bg-emerald-500/10 border-emerald-700/30 text-gray-100 hover:bg-emerald-500/20 transition"
+            >
+              <CardHeader className="flex flex-col space-y-2">
+                <CardTitle className="flex items-center gap-2 text-gray-100 text-lg">
+                  <User className="w-4 h-4 text-emerald-400" />
+                  {booking.customerId?.name ?? "Unknown Customer"}
+                </CardTitle>
+              </CardHeader>
+
+              <CardContent className="space-y-2 text-sm text-gray-300">
+                <p>
+                  <span className="text-gray-100 font-medium">Date:</span>{" "}
+                  {format(new Date(booking.date), "PPP")}
+                </p>
+                <p>
+                  <span className="text-gray-100 font-medium">Status:</span>{" "}
+                  <Badge
+                    className={`${getStatusColor(booking.status)} border-none`}
+                  >
+                    {booking.status.charAt(0).toUpperCase() +
+                      booking.status.slice(1)}
+                  </Badge>
+                </p>
+                {booking.note && (
+                  <p>
+                    <span className="text-gray-100 font-medium">Note:</span>{" "}
+                    {booking.note}
+                  </p>
+                )}
+              </CardContent>
+
+              <CardFooter className="flex gap-2">
+                {booking.status === "pending" ? (
+                  <>
+                    <Button
+                      size="sm"
+                      className="flex-1 bg-emerald-600 hover:bg-emerald-700"
+                      onClick={() => handleUpdateStatus(booking._id, "confirmed")}
+                      disabled={processingId === booking._id}
+                    >
+                      {processingId === booking._id ? "Processing..." : "Accept"}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="flex-1 bg-red-600 hover:bg-red-700"
+                      onClick={() => handleUpdateStatus(booking._id, "cancelled")}
+                      disabled={processingId === booking._id}
+                    >
+                      Reject
+                    </Button>
+                  </>
+                ) : (
+                  <p className="text-sm text-gray-400 italic">
+                    {booking.status === "confirmed"
+                      ? "Accepted"
+                      : booking.status === "cancelled"
+                      ? "Rejected / Cancelled"
+                      : ""}
+                  </p>
+                )}
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
