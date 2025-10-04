@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import BookingModal from "@/components/BookingModal";
 
 type Nutritionist = {
   _id: string;
@@ -29,6 +30,7 @@ type Nutritionist = {
 const NutritionistDetailsPage = () => {
     const { id } = useParams<{ id: string }>();
     const [nutritionist, setNutritionist] = useState<Nutritionist | null>(null);
+    const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -91,11 +93,17 @@ const NutritionistDetailsPage = () => {
         <CardFooter>
           <Button
             className="w-full bg-emerald-500/30 hover:bg-emerald-500/20"
-            onClick={() => alert("Booking feature coming soon!")}
+            onClick={() => setOpen(true)}
           >
             Book Session
           </Button>
         </CardFooter>
+
+        <BookingModal
+          nutritionistId={nutritionist._id}
+          open={open}
+          onClose={() => setOpen(false)}
+        />
       </Card>
     </div>
   )
