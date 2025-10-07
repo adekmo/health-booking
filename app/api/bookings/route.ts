@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { nutritionistId, date, note } = await req.json();
+  const { nutritionistId, date, note, phone } = await req.json();
 
   try {
     const booking = await Booking.create({
@@ -49,6 +49,7 @@ export async function POST(req: NextRequest) {
       nutritionistId,
       date,
       note,
+      phone,
     });
     return NextResponse.json(booking, { status: 201 });
   } catch (err) {

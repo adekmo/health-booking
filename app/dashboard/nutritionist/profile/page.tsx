@@ -68,7 +68,7 @@ const NutritionistProfilePage = () => {
 
   if (!profile) return <p className="text-center mt-10">Loading...</p>;
   return (
-    <div className="w-full p-6 bg-gray-800/30 shadow-lg rounded">
+    <div className="w-full p-6 bg-gradient-to-b from-gray-900 via-emerald-900/10 to-gray-900 shadow-lg rounded">
       {!editMode ? (
         // VIEW MODE
         <Card className="shadow-md bg-emerald-500/20 border-none">

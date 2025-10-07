@@ -7,6 +7,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-hot-toast";
 import { format } from "date-fns";
+import { Input } from "./ui/input";
 
 interface BookingModalProps {
   nutritionistId: string;
@@ -17,6 +18,7 @@ interface BookingModalProps {
 const BookingModal = ({ nutritionistId, open, onClose }: BookingModalProps) => {
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [note, setNote] = useState("");
+    const [phone, setPhone] = useState("");
     const [loading, setLoading] = useState(false);
 
     const handleBook = async () => {
@@ -30,6 +32,7 @@ const BookingModal = ({ nutritionistId, open, onClose }: BookingModalProps) => {
             nutritionistId,
             date: selectedDate,
             note,
+            phone,
         }),
         });
 
@@ -44,14 +47,14 @@ const BookingModal = ({ nutritionistId, open, onClose }: BookingModalProps) => {
     };
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-emerald-500/20 border-none">
+      <DialogContent className="bg-emerald-500/20 border-none overflow-auto">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold text-gray-100">
             Book a Session
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="flex gap-5 justify-between space-y-3">
           <div>
             <h4 className="text-gray-100 text-sm mb-2">Select Date</h4>
             <Calendar
@@ -66,15 +69,25 @@ const BookingModal = ({ nutritionistId, open, onClose }: BookingModalProps) => {
               </p>
             )}
           </div>
-
           <div>
-            <h4 className="text-gray-100 text-sm mb-2">Note</h4>
-            <Textarea
-              placeholder="Add a note for the nutritionist..."
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              className="bg-white/90 text-gray-800"
-            />
+            <div>
+              <h4 className="text-gray-100 text-sm mb-2">Phone Number</h4>
+              <Input
+                placeholder="08xxxxxxxx"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="bg-white/90 text-gray-800"
+              />
+            </div>
+            <div>
+              <h4 className="text-gray-100 text-sm mb-2">Note</h4>
+              <Textarea
+                placeholder="Add a note for the nutritionist..."
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                className="bg-white/90 text-gray-800"
+              />
+            </div>
           </div>
         </div>
 

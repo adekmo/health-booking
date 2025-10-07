@@ -54,6 +54,24 @@
   .header-wrapper {
     @apply flex justify-between items-center px-6 py-4 text-gray-500;
   }
+  .rbc-calendar {
+    @apply bg-[#0f172a] text-[#e2e8f0]
+  }
+  .rbc-event {
+    @apply text-sm font-medium;
+  }
+
+  .rbc-toolbar button {
+    @apply border border-[#334155] rounded-md bg-[#1e293b] text-[#e2e8f0];
+  }
+
+  .rbc-toolbar button.rbc-active {
+    @apply bg-emerald-500 text-[#0f172a];
+  }
+
+  .rbc-today {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+  }
 }
 
 :root {

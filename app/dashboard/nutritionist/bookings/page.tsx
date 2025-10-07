@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import {Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Loader2, CalendarDays, User, Search } from "lucide-react";
+import { Loader2, CalendarDays, User, Search, Phone, Mail } from "lucide-react";
 import { format, isSameDay } from "date-fns";
 import toast from "react-hot-toast";
 import type { Booking } from "@/types/booking";
@@ -22,6 +23,10 @@ const NutritionistBookingsPage = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [searchQuery, setSearchQuery] = useState("");
+
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -72,6 +77,11 @@ const NutritionistBookingsPage = () => {
       default:
         return "bg-gray-500/30 text-gray-200";
     }
+  };
+
+  const handleViewDetail = (booking: Booking) => {
+    setSelectedBooking(booking);
+    setIsDetailOpen(true);
   };
 
   const handleUpdateStatus = async (id: string, status: "confirmed" | "cancelled") => {
@@ -224,7 +234,7 @@ const NutritionistBookingsPage = () => {
                 )}
               </CardContent>
 
-              <CardFooter className="flex gap-2">
+              <CardFooter className="flex gap-5 flex-wrap">
                 {booking.status === "pending" ? (
                   <>
                     <Button
@@ -254,11 +264,92 @@ const NutritionistBookingsPage = () => {
                       : ""}
                   </p>
                 )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 text-gray-100 border-emerald-700 bg-gray-800/20 hover:bg-emerald-700/20"
+                  onClick={() => handleViewDetail(booking)}
+                >
+                  View Details
+                </Button>
               </CardFooter>
             </Card>
           ))}
         </div>
       )}
+
+      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+        <DialogContent className="bg-gray-900 border border-emerald-800/50 text-gray-100 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg text-emerald-400 flex items-center gap-2">
+              <User className="w-5 h-5" />
+              Customer Details
+            </DialogTitle>
+          </DialogHeader>
+
+          {selectedBooking ? (
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-400">Name</p>
+                <p className="font-medium">{selectedBooking.customerId?.name ?? "Unknown"}</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-400">Email</p>
+                <p className="flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-emerald-400" />
+                  {selectedBooking.customerId?.email ?? "-"}
+                </p>
+              </div>
+
+              {selectedBooking?.phone && (
+                <div>
+                  <p className="text-sm text-gray-400">Phone</p>
+                  <p className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-emerald-400" />
+                    {selectedBooking?.phone}
+                  </p>
+                </div>
+              )}
+
+              <div>
+                <p className="text-sm text-gray-400">Date</p>
+                <p>{format(new Date(selectedBooking.date), "PPP")}</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-400">Status</p>
+                <Badge
+                  className={`${getStatusColor(selectedBooking.status)} border-none`}
+                >
+                  {selectedBooking.status}
+                </Badge>
+              </div>
+
+              {selectedBooking.note && (
+                <div>
+                  <p className="text-sm text-gray-400">Note</p>
+                  <p className="italic">“{selectedBooking.note}”</p>
+                </div>
+              )}
+
+              {selectedBooking?.phone && (
+                <a
+                  href={`https://wa.me/${selectedBooking?.phone.replace(/\D/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white mt-4">
+                    Chat via WhatsApp
+                  </Button>
+                </a>
+              )}
+            </div>
+          ) : (
+            <p className="text-center text-gray-400">No booking selected.</p>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

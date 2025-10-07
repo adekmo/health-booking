@@ -7,6 +7,7 @@ export interface IBooking extends Document {
   date: Date;
   status: "pending" | "confirmed" | "cancelled";
   note?: string;
+  phone?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,6 +23,7 @@ const BookingSchema = new Schema<IBooking>(
       default: "pending",
     },
     note: { type: String },
+    phone: { type: String },
   },
   { timestamps: true }
 );

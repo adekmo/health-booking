@@ -19,6 +19,7 @@ export interface Booking {
   date: string;
   status: BookingStatus;
   note?: string;
+  phone?: string;
   createdAt?: string;
   updatedAt?: string;
 }
