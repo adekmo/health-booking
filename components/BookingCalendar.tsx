@@ -15,25 +15,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import CustomerDetailModal from "./CustomerDetailModal";
+import { mapBookingData } from "@/lib/bookingUtils";
+import { BookingEvent } from "@/types/booking";
 
 const localizer = momentLocalizer(moment);
 
 type CalendarViewType = 'month' | 'week' | 'day' | 'agenda'; 
-
-interface BookingEvent {
-  _id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  status: string;
-  note?: string;
-  phone?:string;
-  customerId?: {
-    name?: string;
-    email?: string;
-    phone?: string;
-  };
-}
 
 const BookingCalendar = () => {
   const [events, setEvents] = useState<BookingEvent[]>([]);
@@ -57,23 +44,7 @@ const BookingCalendar = () => {
         const data = await res.json();
 
         if (Array.isArray(data)) {
-          const formatted = data.map((b: any) => ({
-            _id: b._id,
-            title: b.customerId?.name ?? "Unknown Customer",
-            start: new Date(b.date),
-            end: new Date(new Date(b.date).getTime() + (b.durationInMinutes || 60) * 60 * 1000),
-            status: b.status,
-            note: b.note,
-            phone: b.phone,
-            customerId: {
-                name: b.customerId?.name ?? "",
-                email: b.customerId?.email ?? "",
-                // phone: b.customerId?.phone ?? "",
-            },
-          }));
-          setEvents(formatted);
-        } else {
-          console.error("Unexpected data format:", data);
+          setEvents(data.map(mapBookingData));
         }
       } catch (error) {
         console.error("Failed to fetch bookings:", error);

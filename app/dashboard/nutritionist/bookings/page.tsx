@@ -12,19 +12,21 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Loader2, CalendarDays, User, Search, Phone, Mail } from "lucide-react";
 import { format, isSameDay } from "date-fns";
 import toast from "react-hot-toast";
-import type { Booking } from "@/types/booking";
+import type { BookingEvent } from "@/types/booking";
+import CustomerDetailModal from "@/components/CustomerDetailModal";
+import { mapBookingData } from "@/lib/bookingUtils";
 
 const NutritionistBookingsPage = () => {
 
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<BookingEvent[]>([]);
+  const [filteredBookings, setFilteredBookings] = useState<BookingEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [selectedBooking, setSelectedBooking] = useState<BookingEvent | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
 
@@ -33,8 +35,11 @@ const NutritionistBookingsPage = () => {
       try {
         const res = await fetch("/api/bookings");
         const data = await res.json();
-        setBookings(data);
-        setFilteredBookings(data);
+        if (Array.isArray(data)) {
+          const mapped = data.map(mapBookingData);
+          setBookings(mapped);
+          setFilteredBookings(mapped);
+        }
       } catch (error) {
         console.error("Failed to load bookings:", error);
       } finally {
@@ -53,7 +58,7 @@ const NutritionistBookingsPage = () => {
 
     if (selectedDate) {
       filtered = filtered.filter((b) =>
-        isSameDay(new Date(b.date), selectedDate)
+        isSameDay(new Date(b.start), selectedDate)
       );
     }
 
@@ -79,7 +84,7 @@ const NutritionistBookingsPage = () => {
     }
   };
 
-  const handleViewDetail = (booking: Booking) => {
+  const handleViewDetail = (booking: BookingEvent) => {
     setSelectedBooking(booking);
     setIsDetailOpen(true);
   };
@@ -215,7 +220,7 @@ const NutritionistBookingsPage = () => {
               <CardContent className="space-y-2 text-sm text-gray-300">
                 <p>
                   <span className="text-gray-100 font-medium">Date:</span>{" "}
-                  {format(new Date(booking.date), "PPP")}
+                  {format(new Date(booking.start), "PPP")}
                 </p>
                 <p>
                   <span className="text-gray-100 font-medium">Status:</span>{" "}
@@ -278,78 +283,11 @@ const NutritionistBookingsPage = () => {
         </div>
       )}
 
-      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent className="bg-gray-900 border border-emerald-800/50 text-gray-100 max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-lg text-emerald-400 flex items-center gap-2">
-              <User className="w-5 h-5" />
-              Customer Details
-            </DialogTitle>
-          </DialogHeader>
-
-          {selectedBooking ? (
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-400">Name</p>
-                <p className="font-medium">{selectedBooking.customerId?.name ?? "Unknown"}</p>
-              </div>
-
-              <div>
-                <p className="text-sm text-gray-400">Email</p>
-                <p className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-emerald-400" />
-                  {selectedBooking.customerId?.email ?? "-"}
-                </p>
-              </div>
-
-              {selectedBooking?.phone && (
-                <div>
-                  <p className="text-sm text-gray-400">Phone</p>
-                  <p className="flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-emerald-400" />
-                    {selectedBooking?.phone}
-                  </p>
-                </div>
-              )}
-
-              <div>
-                <p className="text-sm text-gray-400">Date</p>
-                <p>{format(new Date(selectedBooking.date), "PPP")}</p>
-              </div>
-
-              <div>
-                <p className="text-sm text-gray-400">Status</p>
-                <Badge
-                  className={`${getStatusColor(selectedBooking.status)} border-none`}
-                >
-                  {selectedBooking.status}
-                </Badge>
-              </div>
-
-              {selectedBooking.note && (
-                <div>
-                  <p className="text-sm text-gray-400">Note</p>
-                  <p className="italic">“{selectedBooking.note}”</p>
-                </div>
-              )}
-
-              {selectedBooking?.phone && (
-                <a
-                  href={`https://wa.me/${selectedBooking?.phone.replace(/\D/g, "")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white mt-4">
-                    Chat via WhatsApp
-                  </Button>
-                </a>
-              )}
-            </div>
-          ) : (
-            <p className="text-center text-gray-400">No booking selected.</p>
-          )}
-        </DialogContent>
-      </Dialog>
+      <CustomerDetailModal
+        open={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        booking={selectedBooking}
+      />
     </div>
   )
 }
