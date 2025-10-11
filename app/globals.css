@@ -151,3 +151,26 @@
     @apply bg-background text-foreground;
   }
 }
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Lebar scrollbar vertikal */
+  height: 8px; /* Tinggi scrollbar horizontal */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: theme('colors.gray.900'); /* Mengambil warna dark dari Tailwind theme */
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: theme('colors.emerald.600'); /* Warna hijau emerald untuk pegangan */
+  border-radius: 10px;
+  /* Tambahkan border agar sedikit menonjol */
+  border: 2px solid theme('colors.gray.900'); 
+}
+
+/* Scrollbar untuk Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin; /* 'auto' atau 'thin' */
+  scrollbar-color: theme('colors.emerald.600') theme('colors.gray.900'); /* thumb color track color */
+}

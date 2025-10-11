@@ -9,12 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Loader2, CalendarDays, User, Search, Phone, Mail } from "lucide-react";
+import { Loader2, CalendarDays, User, Search, Phone, Mail, X } from "lucide-react";
 import { format, isSameDay } from "date-fns";
 import toast from "react-hot-toast";
 import type { BookingEvent } from "@/types/booking";
 import CustomerDetailModal from "@/components/CustomerDetailModal";
 import { mapBookingData } from "@/lib/bookingUtils";
+import ConsultationForm from "@/components/ConsultationForm";
+import { createPortal } from "react-dom";
 
 const NutritionistBookingsPage = () => {
 
@@ -28,7 +30,8 @@ const NutritionistBookingsPage = () => {
 
   const [selectedBooking, setSelectedBooking] = useState<BookingEvent | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-
+  const [openNoteFormId, setOpenNoteFormId] = useState<string | null>(null);
+  const currentBooking = bookings.find(b => b._id === openNoteFormId) || null;
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -143,6 +146,40 @@ const NutritionistBookingsPage = () => {
       </div>
     );
   }
+
+  const ConsultationModal = () => {
+    if (!currentBooking) return null;
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+            {/* Konten Modal Custom */}
+            <div className="relative max-w-lg w-full p-6 m-4 rounded-xl bg-gray-900 border border-emerald-700 shadow-2xl">
+                {/* Header Modal */}
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold text-gray-100">🩺 Consultation Notes for {currentBooking.customerId?.name}</h2>
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => setOpenNoteFormId(null)}
+                        className="text-gray-400"
+                    >
+                        <X className="w-5 h-5" />
+                    </Button>
+                </div>
+                
+                {/* Form Konsultasi */}
+                <ConsultationForm
+                    bookingId={currentBooking._id}
+                    onSuccess={() => {
+                        toast.success("Consultation note saved successfully!");
+                        setOpenNoteFormId(null);
+                    }}
+                />
+            </div>
+        </div>
+    );
+};
+
   return (
     <div className="min-h-screen p-6 bg-gradient-to-b from-gray-900 via-emerald-900/10 to-gray-900">
       <h1 className="text-2xl font-semibold text-gray-100 mb-6">
@@ -260,13 +297,20 @@ const NutritionistBookingsPage = () => {
                       Reject
                     </Button>
                   </>
+                ) : booking.status === "confirmed" ? (
+                  <>
+                    <p className="text-sm text-emerald-400 italic">✅ Accepted</p>
+                    <Button
+                      size="sm"
+                      className="w-full bg-emerald-700 hover:bg-emerald-800"
+                      onClick={() => setOpenNoteFormId(booking._id)} // Buka modal custom
+                    >
+                      Add Consultation Note
+                    </Button>
+                  </>
                 ) : (
                   <p className="text-sm text-gray-400 italic">
-                    {booking.status === "confirmed"
-                      ? "Accepted"
-                      : booking.status === "cancelled"
-                      ? "Rejected / Cancelled"
-                      : ""}
+                    {booking.status === "cancelled" && "❌ Rejected / Cancelled"}
                   </p>
                 )}
                 <Button
@@ -279,9 +323,14 @@ const NutritionistBookingsPage = () => {
                 </Button>
               </CardFooter>
             </Card>
-          ))}
+          ))}    
         </div>
       )}
+
+      {openNoteFormId && typeof window !== 'undefined'
+          ? createPortal(<ConsultationModal />, document.body)
+          : null
+      }
 
       <CustomerDetailModal
         open={isDetailOpen}

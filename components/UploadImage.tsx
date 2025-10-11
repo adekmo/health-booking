@@ -40,6 +40,12 @@ const UploadImage = ({ value, onChange }: UploadImageProps) => {
       )}
       <CldUploadWidget
         uploadPreset="recipe_upload"
+        options={{
+          sources: ["local", "camera"],
+          multiple: false,
+          resourceType: "image",
+        }}
+        // portal={false}
         onSuccess={(result: CloudinaryUploadWidgetResults) => {
           if (result.event === "success" && isInfoWithSecureUrl(result.info)) {
             const { secure_url, format, bytes } = result.info;
@@ -69,7 +75,11 @@ const UploadImage = ({ value, onChange }: UploadImageProps) => {
         {({ open }) => (
           <button
             type="button"
-            onClick={() => open()}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              open();
+            }}
             className="px-4 py-2 bg-emerald-400 cursor-pointer text-white rounded"
           >
             Upload Photo

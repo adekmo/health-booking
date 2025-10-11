@@ -48,7 +48,7 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({ open, onClose
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-900 border border-emerald-800/50 text-gray-100 max-w-md">
+      <DialogContent className="bg-gray-900 border border-emerald-800/50 text-gray-100 max-w-md max-h-[90vh] overflow-y-auto custom-scrollbar">
         <DialogHeader>
           <DialogTitle className="text-lg text-emerald-400 flex items-center gap-2">
             <User className="w-5 h-5" />
@@ -134,7 +134,7 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({ open, onClose
             ) : history.length === 0 ? (
               <p className="text-sm text-gray-500">Belum ada riwayat konsultasi.</p>
             ) : (
-              <ul className="space-y-2 max-h-40 overflow-y-auto pr-1">
+              <ul className="space-y-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
                 {history.map((h) => (
                   <li
                     key={h._id}
