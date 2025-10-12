@@ -4,10 +4,11 @@ import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, User, Phone, Mail, Loader2 } from "lucide-react";
+import { CalendarDays, User, Phone, Mail, Loader2, FileText } from "lucide-react";
 import moment from "moment";
 import { Separator } from "@/components/ui/separator";
 import { BookingEvent, BookingHistory } from "@/types/booking";
+import Image from "next/image";
 
 
 interface CustomerDetailModalProps {
@@ -16,9 +17,24 @@ interface CustomerDetailModalProps {
   booking: BookingEvent | null;
 }
 
+interface ConsultationNote {
+  _id: string;
+  notes: string;
+  recommendation: string;
+  fileUrl?: string;
+  createdAt: string;
+  nutritionistId: {
+    name: string;
+    email: string;
+  };
+}
+
 const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({ open, onClose, booking }) => {
   const [history, setHistory] = useState<BookingHistory[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+
+  const [consultationNote, setConsultationNote] = useState<ConsultationNote | null>(null);
+  const [loadingNote, setLoadingNote] = useState(false);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -34,6 +50,18 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({ open, onClose
         console.error(err);
       } finally {
         setLoadingHistory(false);
+      }
+
+      setLoadingNote(true);
+      try {
+        const res = await fetch(`/api/consultation-note?bookingId=${booking._id}`);
+        if (!res.ok) throw new Error("Failed to fetch note");
+        const data: ConsultationNote | null = await res.json();
+        setConsultationNote(data);
+      } catch (err) {
+        console.error("Error fetching consultation note:", err);
+      } finally {
+        setLoadingNote(false);
       }
     };
     if (open) fetchHistory();
@@ -123,10 +151,60 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({ open, onClose
             </div>
           )}
 
-        {/* 🟢 NEW: Riwayat Konsultasi */}
+          {/* Consultation Note Section */}
+          <Separator className="my-4 border-emerald-800/50" />
+          <div>
+            <h3 className="text-emerald-400 text-sm font-semibold mb-1">Consultation Note</h3>
+            {loadingNote ? (
+              <div className="flex justify-center py-3">
+                <Loader2 className="w-5 h-5 animate-spin text-emerald-400" />
+              </div>
+            ) : consultationNote ? (
+              <div className="space-y-2 bg-gray-800/40 border border-emerald-800/40 p-3 rounded-lg">
+                <p className="text-gray-200 text-sm">{consultationNote.notes}</p>
+                <p className="text-gray-400 text-xs italic">
+                  Rekomendasi: {consultationNote.recommendation}
+                </p>
+
+                {consultationNote.fileUrl && (
+                  <div className="mt-2">
+                    {consultationNote.fileUrl.match(/\.(jpg|jpeg|png|webp)$/i) ? (
+                      <Image
+                        src={consultationNote.fileUrl}
+                        alt="Consultation file"
+                        width={200}
+                        height={200}
+                        className="w-screen h-50 rounded-lg border border-emerald-700/30"
+                      />
+                    ) : (
+                      <a
+                        href={consultationNote.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-emerald-400 flex items-center gap-1 text-sm underline"
+                      >
+                        <FileText className="w-4 h-4" />
+                        Lihat File
+                      </a>
+                    )}
+                  </div>
+                )}
+
+                <p className="text-xs text-gray-500 mt-2">
+                  Dibuat oleh: <span className="text-emerald-300">{consultationNote.nutritionistId?.name}</span> (
+                  {moment(consultationNote.createdAt).format("DD MMM YYYY")})
+                </p>
+              </div>
+            ) : (
+              <p className="text-gray-500 text-sm italic">Belum ada catatan konsultasi.</p>
+            )}
+          </div>
+          {/* END Consultation Note Section */}
+
+        {/* Riwayat Konsultasi */}
           <Separator className="my-3 border-emerald-800/50" />
           <div>
-            <p className="text-sm text-gray-400 mb-1">Riwayat Konsultasi Sebelumnya</p>
+            <p className="text-emerald-400 text-sm font-semibold mb-1">Riwayat Konsultasi Sebelumnya</p>
             {loadingHistory ? (
               <div className="flex justify-center py-3">
                 <Loader2 className="w-5 h-5 animate-spin text-emerald-400" />
@@ -164,7 +242,7 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({ open, onClose
               </ul>
             )}
           </div>
-          {/* 🟢 END Riwayat */}
+          {/* END Riwayat */}
         </div>
 
         <div className="flex justify-end mt-4">
