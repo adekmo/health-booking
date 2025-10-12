@@ -1,8 +1,12 @@
+import StatsOverview from '@/components/nutritionist/StatsOverview'
 import React from 'react'
 
 const NutritionistDashboardPage = () => {
   return (
-    <div>NutritionistDashboardPage</div>
+    <div className="space-y-6">
+      <h1 className="text-xl font-semibold text-emerald-400">Dashboard Overview</h1>
+      <StatsOverview />
+    </div>
   )
 }
 
