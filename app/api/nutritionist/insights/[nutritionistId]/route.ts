@@ -3,7 +3,6 @@ import { connectDB } from "@/lib/mongodb";
 import Booking from "@/models/Booking";
 import Nutritionist from "@/models/Nutritionist";
 import mongoose from "mongoose";
-// import User from "@/models/User";
 
 export async function GET(req: NextRequest, { params }: { params: { nutritionistId: string } }) {
   try {
@@ -43,17 +42,33 @@ export async function GET(req: NextRequest, { params }: { params: { nutritionist
       });
     }
 
+    const { searchParams } = new URL(req.url);
+    const range = searchParams.get("range") || "7d";
+
+    let startDate = new Date();
+    if (range === "30d") startDate.setDate(startDate.getDate() - 30);
+    else if (range === "90d") startDate.setDate(startDate.getDate() - 90);
+    else if (range === "all") startDate = new Date(0);
+    else startDate.setDate(startDate.getDate() - 7);
+
+    const filteredBookings = bookings.filter(
+      (b) => new Date(b.date) >= startDate
+    );
+
     // Grafik tren konsultasi (7 hari terakhir)
     const now = new Date();
-    const past7Days = Array.from({ length: 7 }).map((_, i) => {
+    const dayCount = range === "30d" ? 30 : range === "90d" ? 90 : range === "all" ? 60 : 7;
+    const pastDays = Array.from({ length: dayCount }).map((_, i) => {
       const d = new Date(now);
-      d.setDate(now.getDate() - (6 - i));
-      const dateKey = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-      const consultations = bookings.filter((b) => {
+      d.setDate(now.getDate() - (dayCount - 1 - i));
+      const dateKey = d.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
+      const consultations = filteredBookings.filter((b) => {
         const bd = new Date(b.date);
         return (
-          b.status === "confirmed" &&
-          bd.toDateString() === d.toDateString()
+          b.status === "confirmed" && bd.toDateString() === d.toDateString()
         );
       }).length;
       return { date: dateKey, consultations };
@@ -61,14 +76,23 @@ export async function GET(req: NextRequest, { params }: { params: { nutritionist
 
     // status booking
     const statusData = [
-      { name: "Confirmed", value: bookings.filter((b) => b.status === "confirmed").length },
-      { name: "Pending", value: bookings.filter((b) => b.status === "pending").length },
-      { name: "Cancelled", value: bookings.filter((b) => b.status === "cancelled").length },
+      {
+        name: "Confirmed",
+        value: filteredBookings.filter((b) => b.status === "confirmed").length,
+      },
+      {
+        name: "Pending",
+        value: filteredBookings.filter((b) => b.status === "pending").length,
+      },
+      {
+        name: "Cancelled",
+        value: filteredBookings.filter((b) => b.status === "cancelled").length,
+      },
     ];
 
     // Top customers
     const customerCounts: Record<string, { name: string; total: number }> = {};
-    bookings.forEach((b) => {
+    filteredBookings.forEach((b) => {
       if (!b.customerId) return;
       const name = (b.customerId as any).name || "Unknown";
       if (!customerCounts[name]) {
@@ -81,7 +105,7 @@ export async function GET(req: NextRequest, { params }: { params: { nutritionist
       .slice(0, 5);
 
     return NextResponse.json({
-      consultationData: past7Days,
+      consultationData: pastDays,
       statusData,
       topCustomers,
     });
