@@ -39,7 +39,7 @@ export async function GET(
     const bookings = await Booking.find({ nutritionistId: nutritionist._id });
 
     // Debug log
-    console.log("📊 Total bookings found:", bookings.length);
+    // console.log("📊 Total bookings found:", bookings.length);
 
     if (!bookings.length) {
       return NextResponse.json({
@@ -51,29 +51,28 @@ export async function GET(
       });
     }
 
-    // ✅ Total konsultasi bulan ini (status confirmed)
+    // Total konsultasi bulan ini (status confirmed)
     const confirmedThisMonth = bookings.filter((b) => {
       const d = new Date(b.date);
       return b.status === "confirmed" && d >= startOfMonth && d <= endOfMonth;
     });
     const totalConsultations = confirmedThisMonth.length;
 
-    // ✅ Jumlah customer unik (berdasarkan customerId)
+    // Jumlah customer unik (berdasarkan customerId)
     const uniqueCustomers = new Set(
       bookings.map((b) => b.customerId.toString())
     ).size;
 
-    // ✅ Hitung conversion rate: confirmed / total booking
+    // Hitung conversion rate: confirmed / total booking
     const totalBookings = bookings.length;
     const confirmedCount = bookings.filter((b) => b.status === "confirmed").length;
     const conversionRate =
       totalBookings > 0 ? Math.round((confirmedCount / totalBookings) * 100) : 0;
 
-    // ✅ Hitung status lain
+    // Hitung status lain
     const totalPending = bookings.filter((b) => b.status === "pending").length;
     const totalCancelled = bookings.filter((b) => b.status === "cancelled").length;
 
-    // ✅ Kembalikan data
     return NextResponse.json({
       totalConsultations,
       uniqueCustomers,
