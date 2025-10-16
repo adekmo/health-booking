@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, CalendarDays } from "lucide-react";
+import { Loader2, CalendarDays, Filter } from "lucide-react";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
 import {
@@ -19,12 +19,15 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import type { Booking } from "@/types/booking";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const CustomerBookingsPage = () => {
     const [bookings, setBookings] = useState<Booking[]>([]);
+    const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
     const [isCancelling, setIsCancelling] = useState(false);
+    const [statusFilter, setStatusFilter] = useState("all");
 
     useEffect(() => {
         const fetchBookings = async () => {
@@ -32,6 +35,7 @@ const CustomerBookingsPage = () => {
             const res = await fetch("/api/bookings");
             const data = await res.json();
             setBookings(data);
+            setFilteredBookings(data);
         } catch (error) {
             console.error("Failed to load bookings:", error);
         } finally {
@@ -40,6 +44,15 @@ const CustomerBookingsPage = () => {
         };
         fetchBookings();
     }, []);
+
+    // handle filter by status
+  useEffect(() => {
+    if (statusFilter === "all") {
+      setFilteredBookings(bookings);
+    } else {
+      setFilteredBookings(bookings.filter((book) => book.status === statusFilter));
+    }
+  }, [statusFilter, bookings]);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -104,10 +117,28 @@ const CustomerBookingsPage = () => {
     }
   return (
     <div className="min-h-screen p-6 bg-gradient-to-b from-gray-900 via-emerald-900/10 to-gray-900">
-      <h1 className="text-2xl font-semibold text-gray-100 mb-6">My Bookings</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-semibold text-gray-100">My Bookings</h1>
+
+        {/* Filter Dropdown */}
+        <div className="flex items-center gap-2">
+          <Filter className="text-emerald-400 w-4 h-4" />
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[150px] bg-gray-800/40 border border-emerald-700/40 text-gray-100">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-800 border-emerald-700/30 text-gray-100">
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="confirmed">Confirmed</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {bookings.map((booking) => (
+        {filteredBookings.map((booking) => (
           <Card
             key={booking._id}
             className="bg-emerald-500/10 border-emerald-700/30 text-gray-100 hover:bg-emerald-500/20 transition"
