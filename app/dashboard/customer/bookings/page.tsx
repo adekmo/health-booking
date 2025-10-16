@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, CalendarDays, Filter } from "lucide-react";
+import { Loader2, CalendarDays, Filter, FileText } from "lucide-react";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
 import {
@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { Booking } from "@/types/booking";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const CustomerBookingsPage = () => {
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -28,6 +29,9 @@ const CustomerBookingsPage = () => {
     const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
     const [isCancelling, setIsCancelling] = useState(false);
     const [statusFilter, setStatusFilter] = useState("all");
+    const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+    const [noteData, setNoteData] = useState<any>(null);
+    const [loadingNote, setLoadingNote] = useState(false);
 
     useEffect(() => {
         const fetchBookings = async () => {
@@ -99,6 +103,26 @@ const CustomerBookingsPage = () => {
         }
     };
 
+    const handleOpenDetail = async (booking: Booking) => {
+      setSelectedBooking(booking);
+      setLoadingNote(true);
+      setNoteData(null);
+
+      try {
+        const res = await fetch(`/api/consultation-note?bookingId=${booking._id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setNoteData(data);
+        } else {
+          setNoteData(null);
+        }
+      } catch (error) {
+        console.error("Error fetching consultation note:", error);
+      } finally {
+        setLoadingNote(false);
+      }
+    };
+
     if (loading) {
         return (
         <div className="flex items-center justify-center min-h-[60vh] text-gray-100">
@@ -160,15 +184,77 @@ const CustomerBookingsPage = () => {
                   {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                 </Badge>
               </p>
-              {booking.note && (
-                <p>
-                  <span className="text-gray-100 font-medium">Note:</span>{" "}
-                  {booking.note}
-                </p>
-              )}
             </CardContent>
 
-            <CardFooter>
+            <CardFooter className="flex gap-2">
+              {/* Detail button */}
+              <Dialog onOpenChange={(open) => !open && setSelectedBooking(null)}>
+                <DialogTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-200 border-emerald-700/50"
+                    onClick={() => handleOpenDetail(booking)}
+                  >
+                    <FileText className="w-4 h-4 mr-1" />
+                    View Details
+                  </Button>
+                </DialogTrigger>
+
+                <DialogContent className="bg-gray-900/90 text-gray-100 border border-emerald-700/40">
+                  <DialogHeader>
+                    <DialogTitle>Booking Details</DialogTitle>
+                  </DialogHeader>
+                  {selectedBooking && (
+                    <div className="space-y-2 text-sm mt-2">
+                      <p>
+                        <strong>Nutritionist:</strong>{" "}
+                        {selectedBooking.nutritionistId?.name ?? "Unknown"}
+                      </p>
+                      <p>
+                        <strong>Date:</strong>{" "}
+                        {format(new Date(selectedBooking.date), "PPP")}
+                      </p>
+                      <p>
+                        <strong>Status:</strong>{" "}
+                        {selectedBooking.status}
+                      </p>
+
+                      <hr className="my-3 border-emerald-700/40" />
+                      <h4 className="font-semibold text-emerald-300">
+                        Consultation Note
+                      </h4>
+
+                      {loadingNote ? (
+                        <p className="text-gray-400">Loading note...</p>
+                      ) : noteData ? (
+                        <div className="space-y-2">
+                          <p><strong>Notes:</strong> {noteData.notes}</p>
+                          <p><strong>Recommendation:</strong> {noteData.recommendation}</p>
+                          {noteData.fileUrl && (
+                            <a
+                              href={noteData.fileUrl}
+                              target="_blank"
+                              className="text-blue-400 underline"
+                            >
+                              View attached file
+                            </a>
+                          )}
+                          <p className="text-xs text-gray-400">
+                            — by {selectedBooking.nutritionistId?.name}
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 italic">
+                          No consultation note yet.
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </DialogContent>
+              </Dialog>
+
+              {/* Cancel button */}
               {booking.status === "pending" && (
                 <AlertDialog
                   open={selectedBookingId === booking._id}
@@ -179,18 +265,17 @@ const CustomerBookingsPage = () => {
                   <AlertDialogTrigger asChild>
                     <Button
                       size="sm"
-                      className="w-full bg-emerald-500/30 hover:bg-emerald-500/20 border-none"
+                      className="flex-1 bg-red-600/20 hover:bg-red-600/30 border-none"
                       onClick={() => setSelectedBookingId(booking._id)}
                     >
-                      Cancel Booking
+                      Cancel
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent className="bg-gray-800/30 border border-emerald-700 text-gray-100">
+                  <AlertDialogContent className="bg-gray-800/80 border border-emerald-700 text-gray-100">
                     <AlertDialogHeader>
                       <AlertDialogTitle>Cancel this booking?</AlertDialogTitle>
                       <AlertDialogDescription className="text-gray-400">
-                        This action cannot be undone. Your booking will be
-                        cancelled permanently.
+                        This action cannot be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
