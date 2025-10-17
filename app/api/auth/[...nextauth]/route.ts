@@ -19,6 +19,10 @@ export const authOptions: NextAuthOptions = {
         const user = await User.findOne({ email: credentials.email });
         if (!user) return null;
 
+        if (user.isBlocked) {
+          throw new Error("Your account has been blocked. Please contact the administrator.");
+        }
+
         const isPasswordValid = await compare(credentials.password, user.password);
         if (!isPasswordValid) return null;
 

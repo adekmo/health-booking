@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AlertCircle } from "lucide-react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 export default function SignInPage() {
@@ -14,6 +15,22 @@ export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const searchParams = useSearchParams()
+  const errorParam = searchParams.get("error");
+
+  const getErrorMessage = (error: string | null) => {
+    switch (error) {
+      case "CredentialsSignin":
+        return "Invalid email or password.";
+      case "Your account has been blocked. Please contact the administrator.":
+        return "Your account has been blocked. Please contact the administrator.";
+      default:
+        return error || null;
+    }
+  };
+
+  const initialError = getErrorMessage(errorParam);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,9 +43,13 @@ export default function SignInPage() {
     setLoading(false);
 
     if (res?.ok) {
-      router.push("/"); // redirect ke homepage
+      router.push("/");
     } else {
-      alert("Login gagal, periksa email/password.");
+      if (res?.error === "Your account has been blocked. Please contact the administrator.") {
+        setErrorMessage("Your account has been blocked. Please contact the administrator.");
+      } else {
+        setErrorMessage("Invalid email or password. Please try again.");
+      }
     }
   };
 
@@ -42,6 +63,12 @@ export default function SignInPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {(errorMessage || initialError) && (
+            <div className="flex items-center gap-2 mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+              <AlertCircle className="w-5 h-5 text-red-600" />
+              <span>{errorMessage || initialError}</span>
+            </div>
+          )}
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
