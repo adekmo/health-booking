@@ -8,6 +8,7 @@ export interface IUser extends Document {
   photo?: string;
   phone?: string;
   address?: string;
+  isBlocked: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,6 +26,7 @@ const UserSchema = new Schema<IUser>(
     photo: { type: String, default: "" },
     phone: { type: String, default: "" },
     address: { type: String, default: "" },
+    isBlocked: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
