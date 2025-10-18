@@ -17,6 +17,7 @@ import CustomerDetailModal from "@/components/CustomerDetailModal";
 import { mapBookingData } from "@/lib/bookingUtils";
 import ConsultationForm from "@/components/ConsultationForm";
 import { createPortal } from "react-dom";
+import { getStatusColor } from "@/lib/getStatusColor";
 
 const NutritionistBookingsPage = () => {
 
@@ -73,19 +74,6 @@ const NutritionistBookingsPage = () => {
 
     setFilteredBookings(filtered);
   }, [statusFilter, selectedDate, searchQuery, bookings]);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "bg-yellow-500/30 text-yellow-200";
-      case "confirmed":
-        return "bg-emerald-500/30 text-emerald-200";
-      case "cancelled":
-        return "bg-red-500/30 text-red-200";
-      default:
-        return "bg-gray-500/30 text-gray-200";
-    }
-  };
 
   const handleViewDetail = (booking: BookingEvent) => {
     setSelectedBooking(booking);

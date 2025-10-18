@@ -21,6 +21,7 @@ import {
 import type { Booking } from "@/types/booking";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { getStatusColor } from "@/lib/getStatusColor";
 
 const CustomerBookingsPage = () => {
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -57,19 +58,6 @@ const CustomerBookingsPage = () => {
       setFilteredBookings(bookings.filter((book) => book.status === statusFilter));
     }
   }, [statusFilter, bookings]);
-
-    const getStatusColor = (status: string) => {
-        switch (status) {
-        case "pending":
-            return "bg-yellow-500/30 text-yellow-200";
-        case "confirmed":
-            return "bg-emerald-500/30 text-emerald-200";
-        case "cancelled":
-            return "bg-red-500/30 text-red-200";
-        default:
-            return "bg-gray-500/30 text-gray-200";
-        }
-    };
 
     const handleCancelBooking = async (id: string) => {
         setIsCancelling(true);

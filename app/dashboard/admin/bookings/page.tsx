@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Booking } from "@/types/booking";
+import { getStatusColor } from "@/lib/getStatusColor";
 
 interface ConsultationNote {
   notes: string;
@@ -52,19 +53,6 @@ const AdminBookingsPage = () => {
     }
   }, [statusFilter, bookings]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "bg-yellow-500/30 text-yellow-300";
-      case "confirmed":
-        return "bg-emerald-500/30 text-emerald-300";
-      case "cancelled":
-        return "bg-red-500/30 text-red-300";
-      default:
-        return "bg-gray-500/30 text-gray-300";
-    }
-  };
-
   // Fetch consultation note for selected booking
   const handleViewDetails = async (booking: Booking) => {
     setSelectedBooking(booking);
@@ -92,17 +80,17 @@ const AdminBookingsPage = () => {
     );
   }
   return (
-    <div className="min-h-screen p-6 bg-gray-900 text-gray-100">
+    <div className="min-h-screen p-6 text-gray-100">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold">All Bookings</h1>
 
         <div className="flex items-center gap-2">
           <Filter className="text-emerald-400 w-4 h-4" />
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[150px] bg-gray-800 border-emerald-700/40 text-gray-100">
+            <SelectTrigger className="w-[180px] bg-gray-800/50 border-gray-700 text-gray-100">
               <SelectValue placeholder="Filter status" />
             </SelectTrigger>
-            <SelectContent className="bg-gray-800 text-gray-100">
+            <SelectContent className="bg-gray-800 border-gray-700 text-gray-100">
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="confirmed">Confirmed</SelectItem>
@@ -113,7 +101,7 @@ const AdminBookingsPage = () => {
       </div>
 
       {/* Table */}
-      <Card className="bg-gray-800 border-emerald-800/30">
+      <Card className="bg-gray-800/40 border border-emerald-800/30 text-gray-100 overflow-x-auto rounded-2xl">
         <CardHeader>
           <CardTitle className="text-gray-100">Bookings List</CardTitle>
         </CardHeader>
@@ -123,10 +111,9 @@ const AdminBookingsPage = () => {
               No bookings found.
             </p>
           ) : (
-            <div className="overflow-x-auto">
               <table className="w-full text-left text-gray-200">
-                <thead className="text-gray-400 border-b border-emerald-800/30">
-                  <tr>
+                <thead>
+                  <tr className="bg-emerald-900/30 text-emerald-300 text-left">
                     <th className="p-3">Customer</th>
                     <th className="p-3">Nutritionist</th>
                     <th className="p-3">Date</th>
@@ -136,7 +123,7 @@ const AdminBookingsPage = () => {
                 </thead>
                 <tbody>
                   {filteredBookings.map((booking) => (
-                    <tr key={booking._id} className="border-b border-gray-700/40">
+                    <tr key={booking._id} className="border-b border-gray-700/50">
                       <td className="p-3">
                         <div>
                           <p>{booking.customerId?.name || "Unknown"}</p>
@@ -169,7 +156,6 @@ const AdminBookingsPage = () => {
                   ))}
                 </tbody>
               </table>
-            </div>
           )}
         </CardContent>
       </Card>
