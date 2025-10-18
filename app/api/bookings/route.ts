@@ -13,19 +13,31 @@ export async function GET(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
-  // const role = searchParams.get("role"); // customer / nutritionist
+  // const role = searchParams.get("role");
 
   try {
     let bookings;
-    if (session.user.role === "customer") {
-      bookings = await Booking.find({ customerId: session.user.id }).populate("nutritionistId");
+    if (session.user.role === "admin") {
+      bookings = await Booking.find()
+        .populate("customerId")
+        .populate({
+          path: "nutritionistId",
+          populate: { path: "userId" },
+        })
+        .sort({ createdAt: -1 });
+    } else if (session.user.role === "customer") {
+      bookings = await Booking.find({ customerId: session.user.id })
+        .populate("nutritionistId")
+        .sort({ createdAt: -1 });
     } else if (session.user.role === "nutritionist") {
       const nutritionist = await Nutritionist.findOne({ userId: session.user.id });
       if (nutritionist) {
         bookings = await Booking.find({ nutritionistId: nutritionist._id })
-          .populate("customerId");
+          .populate("customerId")
+          .sort({ createdAt: -1 });
       } else {
         console.warn("Nutritionist profile not found for user:", session.user.id);
+        bookings = [];
       }
     } else {
       bookings = [];
