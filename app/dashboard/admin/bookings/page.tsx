@@ -5,11 +5,29 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, Filter, Eye } from "lucide-react";
 import { format } from "date-fns";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Booking } from "@/types/booking";
 import { getStatusColor } from "@/lib/getStatusColor";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ConsultationNote {
   notes: string;
@@ -18,9 +36,7 @@ interface ConsultationNote {
 }
 
 const AdminBookingsPage = () => {
-
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -28,32 +44,25 @@ const AdminBookingsPage = () => {
   const [consultationNote, setConsultationNote] = useState<ConsultationNote | null>(null);
   const [noteLoading, setNoteLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const res = await fetch("/api/bookings");
-        const data = await res.json();
-        setBookings(data);
-        setFilteredBookings(data);
-      } catch (err) {
-        console.error("Failed to load bookings:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBookings();
-  }, []);
-
-  // Filter by status
-  useEffect(() => {
-    if (statusFilter === "all") {
-      setFilteredBookings(bookings);
-    } else {
-      setFilteredBookings(bookings.filter((b) => b.status === statusFilter));
+  // Fetch bookings by status (server-side filtering)
+  const fetchBookings = async (status: string) => {
+    setLoading(true);
+    try {
+      const query = status === "all" ? "" : `?status=${status}`;
+      const res = await fetch(`/api/bookings${query}`);
+      const data = await res.json();
+      setBookings(data);
+    } catch (err) {
+      console.error("Failed to load bookings:", err);
+    } finally {
+      setLoading(false);
     }
-  }, [statusFilter, bookings]);
+  };
 
-  // Fetch consultation note for selected booking
+  useEffect(() => {
+    fetchBookings(statusFilter);
+  }, [statusFilter]);
+
   const handleViewDetails = async (booking: Booking) => {
     setSelectedBooking(booking);
     setConsultationNote(null);
@@ -62,9 +71,7 @@ const AdminBookingsPage = () => {
     try {
       const res = await fetch(`/api/consultation-note?bookingId=${booking._id}`);
       const data = await res.json();
-      if (data && !data.error) {
-        setConsultationNote(data);
-      }
+      if (data && !data.error) setConsultationNote(data);
     } catch (err) {
       console.error("Failed to fetch consultation note:", err);
     } finally {
@@ -72,13 +79,6 @@ const AdminBookingsPage = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh] text-gray-300">
-        <Loader2 className="animate-spin mr-2" /> Loading bookings...
-      </div>
-    );
-  }
   return (
     <div className="min-h-screen p-6 text-gray-100">
       <div className="flex items-center justify-between mb-6">
@@ -100,65 +100,79 @@ const AdminBookingsPage = () => {
         </div>
       </div>
 
-      {/* Table */}
-      <Card className="bg-gray-800/40 border border-emerald-800/30 text-gray-100 overflow-x-auto rounded-2xl">
-        <CardHeader>
-          <CardTitle className="text-gray-100">Bookings List</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {filteredBookings.length === 0 ? (
-            <p className="text-gray-400 text-center py-6">
-              No bookings found.
-            </p>
-          ) : (
-              <table className="w-full text-left text-gray-200">
-                <thead>
-                  <tr className="bg-emerald-900/30 text-emerald-300 text-left">
-                    <th className="p-3">Customer</th>
-                    <th className="p-3">Nutritionist</th>
-                    <th className="p-3">Date</th>
-                    <th className="p-3">Status</th>
-                    <th className="p-3 text-center">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredBookings.map((booking) => (
-                    <tr key={booking._id} className="border-b border-gray-700/50">
-                      <td className="p-3">
-                        <div>
-                          <p>{booking.customerId?.name || "Unknown"}</p>
-                          <p className="text-xs text-gray-400">{booking.customerId?.email}</p>
-                        </div>
-                      </td>
-                      <td className="p-3">
-                        <div>
-                          <p>{booking.nutritionistId?.name || "Unknown"}</p>
-                          <p className="text-xs text-gray-400">{booking.nutritionistId?.specialization}</p>
-                        </div>
-                      </td>
-                      <td className="p-3">{format(new Date(booking.date), "PPP")}</td>
-                      <td className="p-3">
-                        <Badge className={`${getStatusColor(booking.status)} border-none`}>
-                          {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                        </Badge>
-                      </td>
-                      <td className="p-3 text-center">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleViewDetails(booking)}
-                          className="border-emerald-700/40 hover:bg-emerald-500/20 text-emerald-400"
-                        >
-                          <Eye className="w-4 h-4 mr-1" /> View
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-          )}
-        </CardContent>
-      </Card>
+      {/* Loading / Table */}
+      {loading ? (
+        <div className="flex items-center justify-center min-h-[40vh] text-gray-300">
+          <Loader2 className="animate-spin mr-2" /> Loading bookings...
+        </div>
+      ) : (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={statusFilter}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25 }}
+          >
+            <Card className="bg-gray-800/40 border border-emerald-800/30 text-gray-100 overflow-x-auto rounded-2xl">
+              <CardHeader>
+                <CardTitle className="text-gray-100">Bookings List</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {bookings.length === 0 ? (
+                  <p className="text-gray-400 text-center py-6">No bookings found.</p>
+                ) : (
+                  <table className="w-full text-left text-gray-200">
+                    <thead>
+                      <tr className="bg-emerald-900/30 text-emerald-300 text-left">
+                        <th className="p-3">Customer</th>
+                        <th className="p-3">Nutritionist</th>
+                        <th className="p-3">Date</th>
+                        <th className="p-3">Status</th>
+                        <th className="p-3 text-center">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bookings.map((booking) => (
+                        <tr key={booking._id} className="border-b border-gray-700/50">
+                          <td className="p-3">
+                            <div>
+                              <p>{booking.customerId?.name || "Unknown"}</p>
+                              <p className="text-xs text-gray-400">{booking.customerId?.email}</p>
+                            </div>
+                          </td>
+                          <td className="p-3">
+                            <div>
+                              <p>{booking.nutritionistId?.name || "Unknown"}</p>
+                              <p className="text-xs text-gray-400">{booking.nutritionistId?.specialization}</p>
+                            </div>
+                          </td>
+                          <td className="p-3">{format(new Date(booking.date), "PPP")}</td>
+                          <td className="p-3">
+                            <Badge className={`${getStatusColor(booking.status)} border-none`}>
+                              {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                            </Badge>
+                          </td>
+                          <td className="p-3 text-center">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleViewDetails(booking)}
+                              className="border-emerald-700/40 hover:bg-emerald-500/20 text-emerald-400"
+                            >
+                              <Eye className="w-4 h-4 mr-1" /> View
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        </AnimatePresence>
+      )}
 
       {/* Detail Modal */}
       <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
@@ -214,7 +228,7 @@ const AdminBookingsPage = () => {
         </DialogContent>
       </Dialog>
     </div>
-  )
-}
+  );
+};
 
-export default AdminBookingsPage
+export default AdminBookingsPage;

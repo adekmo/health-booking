@@ -1,4 +1,3 @@
-// app/api/bookings/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Booking from "@/models/Booking";
@@ -13,11 +12,17 @@ export async function GET(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
+  const status = searchParams.get("status");
 
   try {
+    let filter: any = {};
+    if (status && ["pending", "confirmed", "cancelled"].includes(status)) {
+      filter.status = status;
+    }
+
     let bookings;
     if (session.user.role === "admin") {
-      bookings = await Booking.find()
+      bookings = await Booking.find(filter)
         .populate("customerId")
         .populate({
           path: "nutritionistId",
@@ -25,13 +30,13 @@ export async function GET(req: NextRequest) {
         })
         .sort({ createdAt: -1 });
     } else if (session.user.role === "customer") {
-      bookings = await Booking.find({ customerId: session.user.id })
+      bookings = await Booking.find({ customerId: session.user.id, ...filter })
         .populate("nutritionistId")
         .sort({ createdAt: -1 });
     } else if (session.user.role === "nutritionist") {
       const nutritionist = await Nutritionist.findOne({ userId: session.user.id });
       if (nutritionist) {
-        bookings = await Booking.find({ nutritionistId: nutritionist._id })
+        bookings = await Booking.find({ nutritionistId: nutritionist._id, ...filter })
           .populate("customerId")
           .sort({ createdAt: -1 });
       } else {
