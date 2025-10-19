@@ -28,6 +28,11 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
+  // Customer dashboard
+  if (pathname.startsWith("/dashboard/customer") && role !== "customer") {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
   return NextResponse.next();
 }
 

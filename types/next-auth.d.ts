@@ -8,6 +8,7 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       role: "customer" | "nutritionist" | "admin";
+      photo?: string | null;
     };
   }
 
@@ -16,6 +17,7 @@ declare module "next-auth" {
     name?: string | null;
     email?: string | null;
     role?: "customer" | "nutritionist" | "admin";
+    photo?: string | null;
   }
 }
 
@@ -23,5 +25,6 @@ declare module "next-auth/jwt" {
   interface JWT {
     id?: string;
     role?: "customer" | "nutritionist" | "admin";
+    photo?: string | null;
   }
 }
