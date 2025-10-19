@@ -1,7 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, ClipboardList, UserCheck, Activity } from "lucide-react";
+import AdminChart from "@/components/admin/AdminChart";
 import StatsCard from "@/components/admin/StatsCard";
 import { motion } from "framer-motion";
 
@@ -17,6 +16,9 @@ const AdminDashboardPage = () => {
 
       {/* Summary Cards */}
       <StatsCard />
+
+      {/* Chart */}
+      <AdminChart />
     </motion.div>
   )
 }

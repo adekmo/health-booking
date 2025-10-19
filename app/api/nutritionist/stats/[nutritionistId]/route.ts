@@ -38,9 +38,6 @@ export async function GET(
     // Ambil semua booking milik nutritionist
     const bookings = await Booking.find({ nutritionistId: nutritionist._id });
 
-    // Debug log
-    // console.log("📊 Total bookings found:", bookings.length);
-
     if (!bookings.length) {
       return NextResponse.json({
         totalConsultations: 0,
