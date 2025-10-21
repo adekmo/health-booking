@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle } from "lucide-react";
 import { signIn } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -54,78 +55,127 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen ">
-      <Card className="w-full max-w-sm bg-emerald-500/20 border-none">
-        <CardHeader >
-          <CardTitle className="text-emerald-500">Login to your account</CardTitle>
-          <CardDescription className="text-gray-400">
-            Enter your email below to login to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {(errorMessage || initialError) && (
-            <div className="flex items-center gap-2 mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-              <AlertCircle className="w-5 h-5 text-red-600" />
-              <span>{errorMessage || initialError}</span>
-            </div>
-          )}
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email" className="text-emerald-500">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  placeholder="m@example.com"
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
+    <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
+      {/* leftside */}
+      <div className="hidden md:flex flex-col justify-center items-center bg-emerald-500/20 text-white p-8">
+        <h1 className="text-4xl font-bold mb-4">Welcome Back!</h1>
+        <p className="text-lg max-w-sm text-center">
+          Stay on top of your nutrition goals with <span className="font-semibold text-emerald-500">NutriCare</span>.
+        </p>
+
+        {/* Mockup App */}
+        <div className="mt-10 bg-white/80 p-3 rounded-xl shadow-md border border-gray-100">
+          <Image
+            src="/images/dashboard-mockup.png"
+            alt="App Dashboard Preview"
+            width={400}
+            height={400}
+            className="rounded-lg"
+          />
+          <p className="text-sm text-gray-600 mt-2 text-center font-medium">
+            A glimpse of your personalized dashboard
+          </p>
+        </div>
+      </div>
+
+      {/* rightside */}
+      <div className="flex items-center justify-center bg-foreground">
+        <Card className="w-full max-w-sm shadow-lg bg-emerald-500/20">
+          <CardHeader >
+            <CardTitle className="text-emerald-500">Welcome to NutriCare</CardTitle>
+            <CardDescription className="text-gray-400">
+              Manage your health, nutrition, and wellness easily.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {(errorMessage || initialError) && (
+              <div className="flex items-center gap-2 mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                <AlertCircle className="w-5 h-5 text-red-600" />
+                <span>{errorMessage || initialError}</span>
               </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password" className="text-emerald-500">Password</Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm text-gray-400 underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
+            )}
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="flex flex-col gap-6">
+                <div className="grid gap-2">
+                  <Label htmlFor="email" className="text-emerald-500">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    placeholder="m@example.com"
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
                 </div>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  placeholder="********"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required 
-                />
+                <div className="grid gap-2">
+                  <div className="flex items-center">
+                    <Label htmlFor="password" className="text-emerald-500">Password</Label>
+                    <a
+                      href="#"
+                      className="ml-auto inline-block text-sm text-gray-400 underline-offset-4 hover:underline"
+                    >
+                      Forgot your password?
+                    </a>
+                  </div>
+                  <Input 
+                    id="password" 
+                    type="password" 
+                    placeholder="********"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required 
+                  />
+                </div>
               </div>
-            </div>
-            <Button type="submit" className="w-full bg-emerald-500 hover:bg-emerald-500/80" disabled={loading}>
-              {loading ? "Signing in..." : "Sign In"}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex-col gap-2">
-          <Button
-            variant="outline"
-            className="w-full text-emerald-500 hover:text-emerald-500/80"
-            type="button"
-            onClick={() => signIn("google", { callbackUrl: "/" })}
-          >
-            Login with Google
-          </Button>
-          <div className="w-full flex justify-center">
-            <p className="text-sm text-gray-400 mt-2 flex items-center gap-1">
-              Don’t have an account?{" "}
-              <Button asChild variant="link" className="p-0 h-auto text-emerald-500">
-                <Link href="/auth/register" >Sign Up</Link>
+              <Button type="submit" className="w-full bg-emerald-500 hover:bg-emerald-500/80" disabled={loading}>
+                {loading ? "Signing in..." : "Sign In"}
               </Button>
-            </p>
-          </div>
-        </CardFooter>
-      </Card>
+            </form>
+          </CardContent>
+          <CardFooter className="flex-col gap-2">
+            <Button
+              variant="outline"
+              className="w-full text-emerald-500 hover:text-emerald-500/80"
+              type="button"
+              onClick={() => signIn("google", { callbackUrl: "/" })}
+            >
+              Login with Google
+            </Button>
+            <div className="w-full flex justify-center">
+              <p className="text-sm text-gray-400 mt-2 flex items-center gap-1">
+                Don’t have an account?{" "}
+                <Button asChild variant="link" className="p-0 h-auto text-emerald-500">
+                  <Link href="/auth/register" >Sign Up</Link>
+                </Button>
+              </p>
+            </div>
+            <div className="mt-4 text-center">
+              <p className="text-xs text-gray-400 flex items-center justify-center gap-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 text-emerald-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 11c0-1.657 1.343-3 3-3s3 1.343 3 3v2a3 3 0 01-6 0v-2z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 13v-2a7 7 0 0114 0v2m-7 8h.01"
+                  />
+                </svg>
+                We value your privacy. Your data is safe with us.
+              </p>
+            </div>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 }
