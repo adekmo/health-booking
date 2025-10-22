@@ -22,6 +22,7 @@ import type { Booking } from "@/types/booking";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { getStatusColor } from "@/lib/getStatusColor";
+import { formatInTimeZone } from "date-fns-tz";
 
 const CustomerBookingsPage = () => {
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -164,7 +165,7 @@ const CustomerBookingsPage = () => {
             <CardContent className="space-y-2 text-sm text-gray-300">
               <p>
                 <span className="text-gray-100 font-medium">Date:</span>{" "}
-                {format(new Date(booking.date), "PPP")}
+                {formatInTimeZone(new Date(booking.date), "Asia/Jakarta", "PPP 'at' p")}
               </p>
               <p>
                 <span className="text-gray-100 font-medium">Status:</span>{" "}
@@ -201,7 +202,7 @@ const CustomerBookingsPage = () => {
                       </p>
                       <p>
                         <strong>Date:</strong>{" "}
-                        {format(new Date(selectedBooking.date), "PPP")}
+                        {formatInTimeZone(new Date(selectedBooking.date), "Asia/Jakarta", "PPP 'at' p")}
                       </p>
                       <p>
                         <strong>Status:</strong>{" "}

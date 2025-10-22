@@ -103,6 +103,8 @@ const NutritionistDetailsPage = () => {
           nutritionistId={nutritionist._id}
           open={open}
           onClose={() => setOpen(false)}
+          availableDays={nutritionist.availableDays}
+          availableHours={nutritionist.availableHours}
         />
       </Card>
     </div>

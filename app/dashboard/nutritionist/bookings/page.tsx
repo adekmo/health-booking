@@ -248,6 +248,10 @@ const NutritionistBookingsPage = () => {
                   {format(new Date(booking.start), "PPP")}
                 </p>
                 <p>
+                  <span className="text-gray-100 font-medium">Time:</span>{" "}
+                  {format(new Date(booking.start), "p")}
+                </p>
+                <p>
                   <span className="text-gray-100 font-medium">Status:</span>{" "}
                   <Badge
                     className={`${getStatusColor(booking.status)} border-none`}

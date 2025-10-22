@@ -60,10 +60,35 @@ export async function POST(req: NextRequest) {
   const { nutritionistId, date, note, phone } = await req.json();
 
   try {
+    const bookingDate = new Date(date);
+
+    // Hitung rentang waktu sesi (1 jam)
+    const startTime = new Date(bookingDate);
+    const endTime = new Date(bookingDate);
+    endTime.setHours(endTime.getHours() + 1);
+
+    // pngcekan apakah sudah ada booking lain di waktu yang sama untuk nutritionist tsb
+    const existingBooking = await Booking.findOne({
+      nutritionistId,
+      date: {
+        $gte: startTime, // mulai dari jam tersebut
+        $lt: endTime,    // hingga sebelum 1 jam berikutnya
+      },
+      status: { $ne: "cancelled" }, // abaikan booking yang dibatalkan
+    });
+
+    if (existingBooking) {
+      return NextResponse.json(
+        { error: "This time slot is already booked. Please choose another time." },
+        { status: 400 }
+      );
+    }
+
+    // kondisi Jika belum ada, buat booking baru
     const booking = await Booking.create({
       customerId: session.user.id,
       nutritionistId,
-      date,
+      date: bookingDate,
       note,
       phone,
     });

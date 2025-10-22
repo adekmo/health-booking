@@ -127,6 +127,41 @@ const NutritionistProfilePage = () => {
                 <h4 className="font-semibold">Bio</h4>
                 <p className="bg-emerald-300/20 px-3 py-2 rounded">{profile.bio}</p>
               </div>
+
+              <div className="md:col-span-2">
+                <h4 className="font-semibold mb-2">Availability</h4>
+
+                {/* Available Days */}
+                <div className="bg-emerald-300/20 px-3 py-2 rounded mb-2">
+                  <p className="text-sm text-gray-300 mb-1 font-medium">Available Days:</p>
+                  {profile.availableDays?.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {profile.availableDays.map((day, index) => (
+                        <span
+                          key={index}
+                          className="bg-emerald-500/30 text-white text-xs px-3 py-1 rounded-full capitalize"
+                        >
+                          {day}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-400 text-sm italic">Not set</p>
+                  )}
+                </div>
+
+                {/* Available Hours */}
+                <div className="bg-emerald-300/20 px-3 py-2 rounded">
+                  <p className="text-sm text-gray-300 mb-1 font-medium">Available Hours:</p>
+                  {profile.availableHours?.start && profile.availableHours?.end ? (
+                    <p className="text-white">
+                      {profile.availableHours.start} - {profile.availableHours.end}
+                    </p>
+                  ) : (
+                    <p className="text-gray-400 text-sm italic">Not set</p>
+                  )}
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
