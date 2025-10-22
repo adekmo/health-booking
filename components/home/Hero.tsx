@@ -25,10 +25,10 @@ const Hero = () => {
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-            <Button asChild className="bg-emerald-500/20 hover:bg-emerald-500/10 text-white px-6 py-3 rounded-xl text-lg">
+            <Button asChild className="bg-emerald-500/20 hover:bg-emerald-500/10 text-white px-6 py-3 rounded-xl text-sm">
               <Link href="/auth/signin">Mulai Sekarang</Link>
             </Button>
-            <Button asChild variant="outline" className="border-emerald-500 text-emerald-600 px-6 py-3 rounded-xl text-lg">
+            <Button asChild variant="outline" className="border-emerald-500 text-emerald-600 px-6 py-3 rounded-xl text-sm">
               <Link href="/about">Pelajari Lebih Lanjut</Link>
             </Button>
           </div>

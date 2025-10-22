@@ -37,9 +37,9 @@ const Footer = () => {
           <ul className="space-y-2 text-sm">
             <li><Link href="/" className="hover:text-emerald-400">Home</Link></li>
             <li><Link href="/nutritionist" className="hover:text-emerald-400">Find Nutritionist</Link></li>
-            <li><Link href="/about" className="hover:text-emerald-400">About Us</Link></li>
+            {/* <li><Link href="/about" className="hover:text-emerald-400">About Us</Link></li>
             <li><Link href="/contact" className="hover:text-emerald-400">Contact</Link></li>
-            <li><Link href="/faq" className="hover:text-emerald-400">FAQ</Link></li>
+            <li><Link href="/faq" className="hover:text-emerald-400">FAQ</Link></li> */}
           </ul>
         </div>
 
@@ -62,10 +62,10 @@ const Footer = () => {
           <p className="text-sm mt-2">
             Email:{" "}
             <Link
-              href="mailto:support@nutricare.com"
+              href="mailto:syifayulianaxii.3@gmail.com"
               className="text-emerald-400 hover:underline"
             >
-              support@nutricare.com
+              syifayulianaxii.3@gmail.com
             </Link>
           </p>
         </div>

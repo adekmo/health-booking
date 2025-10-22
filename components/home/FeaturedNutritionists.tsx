@@ -5,9 +5,9 @@ import Image from "next/image";
 
 const nutritionists = [
   {
-    name: "Dr. Sarah Wijaya",
-    specialty: "Ahli Gizi Klinis",
-    image: "/images/nutritionist1.jpg",
+    name: "Syifa Yuliana Ayuningtyas S.Gz",
+    specialty: "Ahli Gizi",
+    image: "/images/nutrition.jpg",
   },
   {
     name: "Dr. Aditya Pratama",
