@@ -23,6 +23,8 @@ export interface Booking {
   status: BookingStatus;
   note?: string;
   phone?: string;
+  totalPrice: number;
+  paymentStatus: "unpaid" | "paid";
   createdAt?: string;
   updatedAt?: string;
 }

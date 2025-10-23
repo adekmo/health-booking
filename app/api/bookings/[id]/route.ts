@@ -6,6 +6,30 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import Nutritionist from "@/models/Nutritionist";
 
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  await connectDB();
+
+  try {
+    const booking = await Booking.findById(params.id)
+      .populate("customerId", "name email")
+      .populate("nutritionistId", "name specialization pricePerSession");
+
+    if (!booking) {
+      return NextResponse.json({ error: "Booking not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(booking);
+  } catch (error) {
+    console.error("Error fetching booking:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch booking" },
+      { status: 500 }
+    );
+  }
+}
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   await connectDB();

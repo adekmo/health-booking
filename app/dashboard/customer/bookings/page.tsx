@@ -23,6 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { getStatusColor } from "@/lib/getStatusColor";
 import { formatInTimeZone } from "date-fns-tz";
+import Link from "next/link";
 
 const CustomerBookingsPage = () => {
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -163,6 +164,9 @@ const CustomerBookingsPage = () => {
             </CardHeader>
 
             <CardContent className="space-y-2 text-sm text-gray-300">
+              <Link href={`/dashboard/customer/invoice/${booking._id}`}>
+                <Button variant="outline">Lihat Invoice</Button>
+              </Link>
               <p>
                 <span className="text-gray-100 font-medium">Date:</span>{" "}
                 {formatInTimeZone(new Date(booking.date), "Asia/Jakarta", "PPP 'at' p")}

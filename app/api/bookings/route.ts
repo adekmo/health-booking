@@ -84,6 +84,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // harga per sesi dari nutritionist
+    const nutritionist = await Nutritionist.findById(nutritionistId);
+    if (!nutritionist) {
+      return NextResponse.json({ error: "Nutritionist not found" }, { status: 404 });
+    }
+
+    const totalPrice = nutritionist.pricePerSession || 0;
+
     // kondisi Jika belum ada, buat booking baru
     const booking = await Booking.create({
       customerId: session.user.id,
@@ -91,6 +99,8 @@ export async function POST(req: NextRequest) {
       date: bookingDate,
       note,
       phone,
+      totalPrice,
+      paymentStatus: "unpaid",
     });
     return NextResponse.json(booking, { status: 201 });
   } catch (err) {

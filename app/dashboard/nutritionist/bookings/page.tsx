@@ -18,6 +18,7 @@ import { mapBookingData } from "@/lib/bookingUtils";
 import ConsultationForm from "@/components/ConsultationForm";
 import { createPortal } from "react-dom";
 import { getStatusColor } from "@/lib/getStatusColor";
+import Link from "next/link";
 
 const NutritionistBookingsPage = () => {
 
@@ -243,6 +244,9 @@ const NutritionistBookingsPage = () => {
               </CardHeader>
 
               <CardContent className="space-y-2 text-sm text-gray-300">
+                <Link href={`/dashboard/nutritionist/invoice/${booking._id}`}>
+                  <Button variant="outline" size="sm">Lihat Invoice</Button>
+                </Link>
                 <p>
                   <span className="text-gray-100 font-medium">Date:</span>{" "}
                   {format(new Date(booking.start), "PPP")}
