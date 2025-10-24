@@ -67,11 +67,22 @@ const AdminUsersPage = () => {
         body: JSON.stringify({ role: newRole }),
       });
       if (!res.ok) throw new Error("Failed to update role");
+      // setUsers((prev) =>
+      //   prev.map((u) => (u._id === userId ? { ...u, role: newRole as any } : u))
+      // );
       setUsers((prev) =>
-        prev.map((u) => (u._id === userId ? { ...u, role: newRole as any } : u))
-      );
+      prev.map((u) =>
+        u._id === userId
+          ? {
+              ...u,
+              role: newRole as "customer" | "nutritionist" | "admin",
+            }
+          : u
+      )
+    );
       toast.success("User role updated successfully");
     } catch (error) {
+      console.error("Error updating user role:", error);
       toast.error("Error updating user role");
     } finally {
       setUpdating(null);
@@ -94,6 +105,7 @@ const AdminUsersPage = () => {
       );
       toast.success(block ? "User blocked" : "User unblocked");
     } catch (error) {
+      console.error("Error updating user status:", error);
       toast.error("Error updating user status");
     } finally {
       setUpdating(null);

@@ -15,6 +15,7 @@ export async function GET() {
     const user = await User.findById(session.user.id).select("name email phone address photo");
     return NextResponse.json(user, { status: 200 });
   } catch (error) {
+    console.error("Error fetching data:", error);
     return NextResponse.json({ error: "Failed to fetch profile" }, { status: 500 });
   }
 }
@@ -31,6 +32,7 @@ export async function PUT(req: NextRequest) {
     const updated = await User.findByIdAndUpdate(session.user.id, body, { new: true });
     return NextResponse.json(updated, { status: 200 });
   } catch (error) {
+    console.error("Error update data:", error);
     return NextResponse.json({ error: "Failed to update profile" }, { status: 500 });
   }
 }

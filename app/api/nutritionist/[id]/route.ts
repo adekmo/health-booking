@@ -18,6 +18,7 @@ export async function GET(req: NextRequest, { params }: Params) {
 
     return NextResponse.json(nutritionist, { status: 200 });
   } catch (error) {
+    console.error("Error fetching data:", error);
     return NextResponse.json({ error: "Failed to fetch nutritionist" }, { status: 500 });
   }
 }
@@ -33,6 +34,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
 
     return NextResponse.json(updated, { status: 200 });
   } catch (error) {
+    console.error("Error update data:", error);
     return NextResponse.json({ error: "Failed to update nutritionist" }, { status: 500 });
   }
 }
@@ -45,6 +47,7 @@ export async function DELETE(req: Request, { params }: Params) {
     
     return NextResponse.json({ message: "Deleted successfully" }, { status: 200 });
   } catch (error) {
+    console.error("Error delete data:", error);
     return NextResponse.json({ error: "Failed to delete nutritionist" }, { status: 500 });
   }
 }

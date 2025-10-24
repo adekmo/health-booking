@@ -15,7 +15,8 @@ export async function GET(req: NextRequest) {
   const status = searchParams.get("status");
 
   try {
-    let filter: any = {};
+    // const filter: any = {};
+    const filter: Record<string, unknown> = {};
     if (status && ["pending", "confirmed", "cancelled"].includes(status)) {
       filter.status = status;
     }
@@ -48,6 +49,7 @@ export async function GET(req: NextRequest) {
     }
     return NextResponse.json(bookings);
   } catch (err) {
+    console.error("Error fetching data:", err);
     return NextResponse.json({ error: "Failed to fetch bookings" }, { status: 500 });
   }
 }
@@ -104,6 +106,7 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json(booking, { status: 201 });
   } catch (err) {
+    console.error("Error create booking:", err);
     return NextResponse.json({ error: "Failed to create booking" }, { status: 500 });
   }
 }

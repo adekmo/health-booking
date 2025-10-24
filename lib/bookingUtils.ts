@@ -1,6 +1,21 @@
 import { BookingEvent } from "@/types/booking";
 
-export function mapBookingData(b: any): BookingEvent {
+interface BookingInput {
+  _id: string;
+  date: string;
+  durationInMinutes?: number;
+  status: string;
+  note?: string;
+  phone?: string;
+  customerId?: {
+    _id?: string;
+    name?: string;
+    email?: string;
+    phone?: string;
+  };
+}
+
+export function mapBookingData(b: BookingInput): BookingEvent {
   const start = new Date(b.date);
   const end = new Date(start.getTime() + (b.durationInMinutes || 60) * 60 * 1000);
 

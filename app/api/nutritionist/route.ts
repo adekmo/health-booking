@@ -12,6 +12,7 @@ export async function GET() {
     
     return NextResponse.json(nutritionists, { status: 200 });
   } catch (error) {
+    console.error("Error fetching data:", error);
     return NextResponse.json({ error: "Failed to fetch nutritionists" }, { status: 500 });
   }
 }

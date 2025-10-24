@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
+// import { format } from "date-fns";
 import { Booking } from "@/types/booking";
 // import { id } from "date-fns/locale"
 
@@ -31,21 +31,21 @@ const InvoicePage = () => {
     fetchBooking();
   }, [id]);
 
-  const markAsPaid = async () => {
-    if (!id) return;
-    try {
-      const res = await fetch(`/api/bookings/${id}/pay`, {
-        method: "PATCH",
-      });
-      if (!res.ok) throw new Error("Failed to update payment status");
-      const data = await res.json();
-      setBooking(data.booking);
-      alert("Marked as Paid!");
-    } catch (err) {
-      console.error(err);
-      alert("Failed to mark as paid");
-    }
-  };
+  // const markAsPaid = async () => {
+  //   if (!id) return;
+  //   try {
+  //     const res = await fetch(`/api/bookings/${id}/pay`, {
+  //       method: "PATCH",
+  //     });
+  //     if (!res.ok) throw new Error("Failed to update payment status");
+  //     const data = await res.json();
+  //     setBooking(data.booking);
+  //     alert("Marked as Paid!");
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert("Failed to mark as paid");
+  //   }
+  // };
 
   if (loading)
     return <p className="text-center text-gray-500 mt-10">Loading invoice...</p>;

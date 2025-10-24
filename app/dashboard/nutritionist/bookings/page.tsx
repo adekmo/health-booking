@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import {Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+// import {Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Loader2, CalendarDays, User, Search, Phone, Mail, X } from "lucide-react";
+import { Loader2, CalendarDays, User, Search, X } from "lucide-react";
 import { format, isSameDay } from "date-fns";
 import toast from "react-hot-toast";
 import type { BookingEvent } from "@/types/booking";
@@ -113,6 +113,7 @@ const NutritionistBookingsPage = () => {
         toast.error("Failed to update booking status.");
       }
     } catch (error) {
+      console.error("Error updating status:", error);
       toast.error("Error updating booking. Please try again later.");
     } finally {
       setProcessingId(null);

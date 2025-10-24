@@ -11,7 +11,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import { Button } from "./ui/button";
-import { BookOpen, Calendar, LayoutDashboard, LogOut, ShieldCheck, Stethoscope, UserCircle2 } from "lucide-react";
+import { BookOpen, LogOut, ShieldCheck, Stethoscope, UserCircle2 } from "lucide-react";
 import NavItems from "./NavItems";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";

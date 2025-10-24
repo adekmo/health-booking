@@ -9,7 +9,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 
-interface DashboardInsightsProps {}
+// interface DashboardInsightsProps {}
 
 interface ConsultationData {
   date: string;
@@ -26,7 +26,7 @@ interface CustomerData {
   total: number;
 }
 
-const DashboardInsights = ({}: DashboardInsightsProps) => {
+const DashboardInsights = () => {
 
     const { data: session } = useSession();
     const [consultationData, setConsultationData] = useState<ConsultationData[]>([]);

@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, CalendarDays, Filter, FileText } from "lucide-react";
-import { format } from "date-fns";
+// import { format } from "date-fns";
 import toast from "react-hot-toast";
 import {
   AlertDialog,
@@ -25,6 +25,12 @@ import { getStatusColor } from "@/lib/getStatusColor";
 import { formatInTimeZone } from "date-fns-tz";
 import Link from "next/link";
 
+interface ConsultationNote {
+  notes: string;
+  recommendation: string;
+  fileUrl?: string;
+}
+
 const CustomerBookingsPage = () => {
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
@@ -33,7 +39,8 @@ const CustomerBookingsPage = () => {
     const [isCancelling, setIsCancelling] = useState(false);
     const [statusFilter, setStatusFilter] = useState("all");
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-    const [noteData, setNoteData] = useState<any>(null);
+    // const [noteData, setNoteData] = useState<any>(null);
+    const [noteData, setNoteData] = useState<ConsultationNote | null>(null);
     const [loadingNote, setLoadingNote] = useState(false);
 
     useEffect(() => {
@@ -86,10 +93,11 @@ const CustomerBookingsPage = () => {
             toast.error("Failed to cancel booking. Please try again.");
         }
         } catch (error) {
-        toast.error("Error cancelling booking. Please try again later.");
+          console.error("Error updating status:", error);
+          toast.error("Error cancelling booking. Please try again later.");
         } finally {
-        setIsCancelling(false);
-        setSelectedBookingId(null);
+          setIsCancelling(false);
+          setSelectedBookingId(null);
         }
     };
 

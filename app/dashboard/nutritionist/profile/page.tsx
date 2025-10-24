@@ -2,7 +2,7 @@
 
 import UploadImage from "@/components/UploadImage";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-hot-toast";
@@ -27,7 +27,7 @@ type NutritionistProfile = {
 };
 
 const NutritionistProfilePage = () => {
-  const router = useRouter();
+  // const router = useRouter();
 
   const { register, handleSubmit, reset, control } = useForm<NutritionistProfile>();
   const [loading, setLoading] = useState(false);

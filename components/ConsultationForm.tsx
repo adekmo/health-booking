@@ -45,8 +45,12 @@ const ConsultationForm = ({ bookingId, onSuccess }: ConsultationFormProps) => {
             setRecommendation("");
             setFileUrl("");
             onSuccess?.();
-            } catch (err: any) {
-            setError(err.message);
+            } catch (err: unknown) {
+            if (err instanceof Error) {
+              setError(err.message);
+            } else {
+              setError("Terjadi kesalahan tidak diketahui");
+            }
             } finally {
             setLoading(false);
             }

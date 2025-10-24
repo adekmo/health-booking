@@ -94,7 +94,8 @@ export async function GET(req: NextRequest, { params }: { params: { nutritionist
     const customerCounts: Record<string, { name: string; total: number }> = {};
     filteredBookings.forEach((b) => {
       if (!b.customerId) return;
-      const name = (b.customerId as any).name || "Unknown";
+      // const name = (b.customerId as any).name || "Unknown";
+      const name = (b.customerId as Record<string, unknown>)?.["name"]?.toString() || "Unknown";
       if (!customerCounts[name]) {
         customerCounts[name] = { name, total: 0 };
       }

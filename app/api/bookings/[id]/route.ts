@@ -75,6 +75,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     await booking.save();
     return NextResponse.json(booking);
   } catch (err) {
+    console.error("Error update data:", err);
     return NextResponse.json({ error: "Failed to update booking" }, { status: 500 });
   }
 }

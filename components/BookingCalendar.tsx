@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Calendar, momentLocalizer, Views, Event as BigCalendarEvent } from "react-big-calendar"; 
+// import { Calendar, momentLocalizer, Views, Event as BigCalendarEvent } from "react-big-calendar";
+import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Loader2, CalendarDays, User } from "lucide-react";
@@ -30,7 +31,7 @@ const BookingCalendar = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   const [currentDate, setCurrentDate] = useState(new Date()); 
-  const [currentView, setCurrentView] = useState<CalendarViewType>(Views.MONTH); 
+  // const [currentView, setCurrentView] = useState<CalendarViewType>(Views.MONTH); 
 
   const [selectedBooking, setSelectedBooking] = useState<BookingEvent | null>(null);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
@@ -56,10 +57,10 @@ const BookingCalendar = () => {
     fetchBookings();
   }, []);
 
-  const handleBookingClick = (booking: BookingEvent) => {
-    setSelectedBooking(booking);
-    setIsCustomerModalOpen(true);
-  };
+  // const handleBookingClick = (booking: BookingEvent) => {
+  //   setSelectedBooking(booking);
+  //   setIsCustomerModalOpen(true);
+  // };
 
   const filterBookingsByDate = (date: Date) => {
     const selected = moment(date).startOf("day");
@@ -77,13 +78,16 @@ const BookingCalendar = () => {
     filterBookingsByDate(slotInfo.start);
   };
   
-  const handleSelectEvent = (event: BookingEvent, e: React.SyntheticEvent<HTMLElement>) => {
-    filterBookingsByDate(event.start); 
+  // const handleSelectEvent = (event: BookingEvent, e: React.SyntheticEvent<HTMLElement>) => {
+  //   filterBookingsByDate(event.start); 
+  // };
+  const handleSelectEvent = (event: BookingEvent) => {
+    filterBookingsByDate(event.start);
   };
   
-  const handleViewChange = (view: CalendarViewType) => {
-      setCurrentView(view); 
-  }
+  // const handleViewChange = (view: CalendarViewType) => {
+  //     setCurrentView(view); 
+  // }
   
   const handleNavigate = (newDate: Date) => {
       setCurrentDate(newDate);
@@ -122,7 +126,7 @@ const BookingCalendar = () => {
           selectable={true}
           date={currentDate} 
           onNavigate={handleNavigate} 
-          onView={handleViewChange} 
+          // onView={handleViewChange}
           
           onSelectSlot={handleSelectSlot}
           onSelectEvent={handleSelectEvent}

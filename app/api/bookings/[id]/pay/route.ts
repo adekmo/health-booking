@@ -22,6 +22,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     return NextResponse.json({ success: true, booking });
   } catch (error) {
+    console.error("Error updating payment status:", error);
     return NextResponse.json({ error: "Failed to update payment status" }, { status: 500 });
   }
 }

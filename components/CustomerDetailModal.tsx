@@ -65,7 +65,7 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({ open, onClose
       }
     };
     if (open) fetchHistory();
-  }, [open, booking?.customerId?._id]);
+  }, [open, booking?.customerId?._id, booking?._id]);
 
   if (!booking) return null;
 
