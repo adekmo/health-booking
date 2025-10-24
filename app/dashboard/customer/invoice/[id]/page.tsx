@@ -53,12 +53,12 @@ const InvoicePage = () => {
   if (!booking)
     return <p className="text-center text-red-500 mt-10">Booking not found</p>;
   return (
-    <div className="max-w-lg mx-auto mt-10 bg-white shadow-md rounded-xl p-6">
-      <h2 className="text-2xl font-semibold mb-4 text-center text-emerald-700">
+    <div className="max-w-lg mx-auto mt-10 bg-emerald-500/20 shadow-md rounded-xl p-6">
+      <h2 className="text-2xl font-semibold mb-4 text-center text-emerald-500">
         Invoice
       </h2>
 
-      <div className="space-y-2 text-gray-700">
+      <div className="space-y-2 text-gray-200">
         <p>
           <strong>Customer:</strong> {booking.customerId?.name}
         </p>
@@ -80,8 +80,8 @@ const InvoicePage = () => {
           <span
             className={`ml-2 px-2 py-1 rounded-md text-sm ${
               booking.paymentStatus === "paid"
-                ? "bg-green-100 text-green-700"
-                : "bg-yellow-100 text-yellow-700"
+                ? "bg-green-100 text-green-500"
+                : "bg-yellow-100 text-yellow-500"
             }`}
           >
             {booking.paymentStatus}

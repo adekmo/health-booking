@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
 import { Booking } from "@/types/booking";
-// import { id } from "date-fns/locale"
 
 const NutritionistInvoicePage = () => {
   const { id } = useParams();
@@ -53,12 +51,12 @@ const NutritionistInvoicePage = () => {
   if (!booking)
     return <p className="text-center text-red-500 mt-10">Booking not found</p>;
   return (
-    <div className="max-w-lg mx-auto mt-10 bg-white shadow-md rounded-xl p-6">
-      <h2 className="text-2xl font-semibold mb-4 text-center text-emerald-700">
+    <div className="max-w-lg mx-auto mt-10 bg-emerald-500/20 shadow-md rounded-xl p-6">
+      <h2 className="text-2xl font-semibold mb-4 text-center text-emerald-500">
         Invoice
       </h2>
 
-      <div className="space-y-2 text-gray-700">
+      <div className="space-y-2 text-gray-200">
         <p>
           <strong>Customer:</strong> {booking.customerId?.name}
         </p>
@@ -80,8 +78,8 @@ const NutritionistInvoicePage = () => {
           <span
             className={`ml-2 px-2 py-1 rounded-md text-sm ${
               booking.paymentStatus === "paid"
-                ? "bg-green-100 text-green-700"
-                : "bg-yellow-100 text-yellow-700"
+                ? "bg-green-100 text-green-600"
+                : "bg-yellow-100 text-yellow-600"
             }`}
           >
             {booking.paymentStatus}
@@ -95,7 +93,7 @@ const NutritionistInvoicePage = () => {
 
       {booking.paymentStatus === "unpaid" && (
         <Button
-          className="w-full mt-5 bg-emerald-600 hover:bg-emerald-700 text-white"
+          className="w-full mt-5 bg-emerald-500 hover:bg-emerald-700 text-white"
           onClick={markAsPaid}
         >
           Tandai Sudah Bayar

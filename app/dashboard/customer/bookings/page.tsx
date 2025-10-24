@@ -164,9 +164,6 @@ const CustomerBookingsPage = () => {
             </CardHeader>
 
             <CardContent className="space-y-2 text-sm text-gray-300">
-              <Link href={`/dashboard/customer/invoice/${booking._id}`}>
-                <Button variant="outline">Lihat Invoice</Button>
-              </Link>
               <p>
                 <span className="text-gray-100 font-medium">Date:</span>{" "}
                 {formatInTimeZone(new Date(booking.date), "Asia/Jakarta", "PPP 'at' p")}
@@ -287,6 +284,10 @@ const CustomerBookingsPage = () => {
                 </AlertDialog>
               )}
             </CardFooter>
+
+            <Link href={`/dashboard/customer/invoice/${booking._id}`} className="flex justify-end mr-5">
+              <Button size="sm" className="flex bg-emerald-900 hover:bg-gray-500/20 mt-2">Invoice</Button>
+            </Link>
           </Card>
         ))}
       </div>
