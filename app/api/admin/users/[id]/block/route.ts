@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, context: { params: { id: string } } | { params: Promise<{ id: string }>}) {
+
+  const params = await (context.params instanceof Promise
+    ? context.params
+    : Promise.resolve(context.params));
   try {
     await connectDB();
 
