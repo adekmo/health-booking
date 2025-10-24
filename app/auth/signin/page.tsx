@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,23 +10,24 @@ import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
 
-export default function SignInPage() {
+function SignInContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const searchParams = useSearchParams()
+
   const errorParam = searchParams.get("error");
 
   const getErrorMessage = (error: string | null) => {
     switch (error) {
       case "CredentialsSignin":
-        return "Invalid email or password.";
+        return "Email atau kata sandi tidak valid.";
       case "Your account has been blocked. Please contact the administrator.":
-        return "Your account has been blocked. Please contact the administrator.";
+        return "Akun Anda telah diblokir. Silakan hubungi administrator.";
       default:
         return error || null;
     }
@@ -36,21 +38,21 @@ export default function SignInPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMessage(null);
+
     const res = await signIn("credentials", {
       email,
       password,
-      redirect: false, // biar bisa handle manual
+      redirect: false,
     });
+
     setLoading(false);
 
     if (res?.ok) {
-      router.push("/");
+      const callbackUrl = searchParams.get("callbackUrl");
+      router.push(callbackUrl || "/");
     } else {
-      if (res?.error === "Your account has been blocked. Please contact the administrator.") {
-        setErrorMessage("Your account has been blocked. Please contact the administrator.");
-      } else {
-        setErrorMessage("Invalid email or password. Please try again.");
-      }
+      setErrorMessage(getErrorMessage(res?.error ?? null));
     }
   };
 
@@ -60,10 +62,10 @@ export default function SignInPage() {
       <div className="hidden md:flex flex-col justify-center items-center bg-emerald-500/20 text-white p-8">
         <h1 className="text-4xl font-bold mb-4">Welcome Back!</h1>
         <p className="text-lg max-w-sm text-center">
-          Stay on top of your nutrition goals with <span className="font-semibold text-emerald-500">NutriCare</span>.
+          Stay on top of your nutrition goals with{" "}
+          <span className="font-semibold text-emerald-500">NutriCare</span>.
         </p>
 
-        {/* Mockup App */}
         <div className="mt-10 bg-white/80 p-3 rounded-xl shadow-md border border-gray-100">
           <Image
             src="/images/dashboard-mockup.png"
@@ -81,10 +83,10 @@ export default function SignInPage() {
       {/* rightside */}
       <div className="flex items-center justify-center bg-foreground">
         <Card className="w-full max-w-sm shadow-lg bg-emerald-500/20">
-          <CardHeader >
+          <CardHeader>
             <CardTitle className="text-emerald-500">Welcome to NutriCare</CardTitle>
-            <CardDescription className="text-gray-400">
-              Manage your health, nutrition, and wellness easily.
+            <CardDescription className="text-gray-500">
+              Silakan login untuk mengelola kesehatan dan nutrisi Anda.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -95,9 +97,9 @@ export default function SignInPage() {
               </div>
             )}
             <form onSubmit={handleLogin} className="space-y-4">
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="email" className="text-emerald-500">Email</Label>
+                  <Label htmlFor="email" className="text-gray-700">Email</Label>
                   <Input
                     id="email"
                     type="email"
@@ -105,47 +107,41 @@ export default function SignInPage() {
                     placeholder="m@example.com"
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    className="border-gray-300 focus:border-emerald-500"
                   />
                 </div>
                 <div className="grid gap-2">
                   <div className="flex items-center">
-                    <Label htmlFor="password" className="text-emerald-500">Password</Label>
+                    <Label htmlFor="password" className="text-gray-700">Password</Label>
                     <a
                       href="#"
-                      className="ml-auto inline-block text-sm text-gray-400 underline-offset-4 hover:underline"
+                      className="ml-auto inline-block text-sm text-emerald-600 underline-offset-4 hover:underline"
                     >
                       Forgot your password?
                     </a>
                   </div>
-                  <Input 
-                    id="password" 
-                    type="password" 
+                  <Input
+                    id="password"
+                    type="password"
                     placeholder="********"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    required 
+                    required
+                    className="border-gray-300 focus:border-emerald-500"
                   />
                 </div>
               </div>
-              <Button type="submit" className="w-full bg-emerald-500 hover:bg-emerald-500/80" disabled={loading}>
+              <Button type="submit" className="w-full bg-emerald-500 hover:bg-emerald-600" disabled={loading}>
                 {loading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex-col gap-2">
-            <Button
-              variant="outline"
-              className="w-full text-emerald-500 hover:text-emerald-500/80"
-              type="button"
-              onClick={() => signIn("google", { callbackUrl: "/" })}
-            >
-              Login with Google
-            </Button>
             <div className="w-full flex justify-center">
-              <p className="text-sm text-gray-400 mt-2 flex items-center gap-1">
+              <p className="text-sm text-gray-500 mt-2 flex items-center gap-1">
                 Don’t have an account?{" "}
-                <Button asChild variant="link" className="p-0 h-auto text-emerald-500">
-                  <Link href="/auth/register" >Sign Up</Link>
+                <Button asChild variant="link" className="p-0 h-auto text-emerald-500 hover:text-emerald-600">
+                  <Link href="/auth/register">Sign Up</Link>
                 </Button>
               </p>
             </div>
@@ -177,5 +173,13 @@ export default function SignInPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div className="text-center p-10 text-gray-500">Loading...</div>}>
+      <SignInContent />
+    </Suspense>
   );
 }
