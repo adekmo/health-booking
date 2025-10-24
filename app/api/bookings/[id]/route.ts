@@ -8,12 +8,14 @@ import Nutritionist from "@/models/Nutritionist";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   await connectDB();
 
   try {
-    const booking = await Booking.findById(params.id)
+    const userId = await params;
+    const bookingId = userId.id;
+    const booking = await Booking.findById(bookingId)
       .populate("customerId", "name email")
       .populate("nutritionistId", "name specialization pricePerSession");
 
@@ -31,11 +33,13 @@ export async function GET(
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   await connectDB();
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const userId = await params;
+  const bookingId = userId.id;
   const { status } = await req.json();
 
   if (!["pending", "confirmed", "cancelled"].includes(status)) {
@@ -43,7 +47,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 
   try {
-    const booking = await Booking.findById(params.id);
+    const booking = await Booking.findById(bookingId);
     if (!booking) {
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }

@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Nutritionist from "@/models/Nutritionist";
 
-export async function GET(req: NextRequest, { params }: { params: { customerId: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ customerId: string }> }) {
   await connectDB();
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -13,6 +13,8 @@ export async function GET(req: NextRequest, { params }: { params: { customerId: 
   }
 
   try {
+    const paramObject = await params;
+    const customerId = paramObject.customerId;
     const nutritionist = await Nutritionist.findOne({ userId: session.user.id });
     if (!nutritionist)
       return NextResponse.json({ error: "Nutritionist not found" }, { status: 404 });
@@ -20,7 +22,7 @@ export async function GET(req: NextRequest, { params }: { params: { customerId: 
     // Ambil semua booking customer dengan nutritionist ini,
     // selain yang masih pending, dan sebelum hari ini
     const history = await Booking.find({
-      customerId: params.customerId,
+      customerId: customerId,
       nutritionistId: nutritionist._id,
       status: { $in: ["confirmed", "cancelled"] },
     //   date: { $lt: new Date() },

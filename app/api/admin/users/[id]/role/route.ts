@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   await connectDB();
+  const userId = await params;
   const { role } = await req.json();
 
   if (!["customer", "nutritionist", "admin"].includes(role)) {
@@ -11,10 +12,10 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
 
   const updatedUser = await User.findByIdAndUpdate(
-    params.id,
-    { role },
-    { new: true }
-  );
+      userId.id,
+      { role },
+      { new: true }
+    );
 
   if (!updatedUser) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
