@@ -21,7 +21,7 @@ import { BookingEvent } from "@/types/booking";
 
 const localizer = momentLocalizer(moment);
 
-type CalendarViewType = 'month' | 'week' | 'day' | 'agenda'; 
+// type CalendarViewType = 'month' | 'week' | 'day' | 'agenda'; 
 
 const BookingCalendar = () => {
   const [events, setEvents] = useState<BookingEvent[]>([]);
