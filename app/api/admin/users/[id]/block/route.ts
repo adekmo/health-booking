@@ -3,18 +3,24 @@ import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  await connectDB();
-  const { isBlocked } = await req.json();
+  try {
+    await connectDB();
 
-  const updatedUser = await User.findByIdAndUpdate(
-    params.id,
-    { isBlocked },
-    { new: true }
-  );
+    const userId = params.id;
+    const user = await User.findById(userId);
 
-  if (!updatedUser) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    user.isBlocked = !user.isBlocked;
+    await user.save();
+
+    return NextResponse.json({
+        message: user.isBlocked ? "User blocked" : "User unblocked",
+      });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
-
-  return NextResponse.json(updatedUser);
 }
